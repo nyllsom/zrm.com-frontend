@@ -40,12 +40,14 @@
         <div class="relative flex justify-center items-center">
           <div class="w-80 h-80 md:w-96 md:h-96 rounded-2xl  flex items-center justify-center overflow-hidden">
             <img 
-              src="@/assets/capoo_swim.gif" 
-              alt="AI Visualization" 
+              :src="randomGif" 
+              alt="Capoo" 
               class="w-full h-full object-contain p-8"
             />
           </div>
         </div>
+
+        
 
       </div>
     </section>
@@ -112,28 +114,37 @@
   </div>
 </template>
 
-
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { api, type DocumentMeta } from '@/api/client'
 import Header from '@/components/Header.vue'
 
-// 在 DocumentMeta 基础上扩展一下，以兼容首页可能存在的描述字段
 interface EventMeta extends DocumentMeta {
   description?: string;
 }
 
 const recentEvents = ref<EventMeta[]>([])
 
+// 随机 GIF
+const randomGif = ref('')
+
+const getRandomGif = () => {
+  const n = Math.floor(Math.random() * 32) + 1
+  return `https://aia-1361527502.cos.ap-nanjing.myqcloud.com/capoo/${n}.gif`
+}
+
 onMounted(async () => {
+  // 设置随机 GIF
+  randomGif.value = getRandomGif()
+
   try {
-    // 活动推文前3篇作为首页展示
     const docs = await api.getDocList('activity-posts')
     recentEvents.value = docs.slice(0, 3)
   } catch (error) {
     console.error('加载近期活动失败', error)
   }
 })
+
 const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString("zh-CN", {
     year: "numeric",
