@@ -275,19 +275,19 @@ function isVideoAsset(asset: AssetRecord): boolean {
   );
 }
 
-function isCodeAsset(asset: AssetRecord): boolean {
-  const ext = getExt(asset);
-  return ['js', 'ts', 'tsx', 'jsx', 'py', 'go', 'java', 'cpp', 'c', 'rs', 'sh', 'json', 'yaml', 'yml', 'html', 'css', 'sql', 'md'].includes(ext);
-}
+// function isCodeAsset(asset: AssetRecord): boolean {
+//   const ext = getExt(asset);
+//   return ['js', 'ts', 'tsx', 'jsx', 'py', 'go', 'java', 'cpp', 'c', 'rs', 'sh', 'json', 'yaml', 'yml', 'html', 'css', 'sql', 'md'].includes(ext);
+// }
 
-function isDocAsset(asset: AssetRecord): boolean {
-  const ext = getExt(asset);
-  const ct = getContentType(asset);
-  return (
-    ct.includes('pdf') ||
-    ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'txt'].includes(ext)
-  );
-}
+// function isDocAsset(asset: AssetRecord): boolean {
+//   const ext = getExt(asset);
+//   const ct = getContentType(asset);
+//   return (
+//     ct.includes('pdf') ||
+//     ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'txt'].includes(ext)
+//   );
+// }
 
 function handleFileChange(event: Event) {
   clearMessage();

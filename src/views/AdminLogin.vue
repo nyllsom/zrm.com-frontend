@@ -79,7 +79,7 @@ const handleLogin = async () => {
     if (axios.isAxiosError(error)) {
       errorMessage.value = (error as any).message || '登录失败'
     } else {
-      errorMessage.value = '发生未知错误'
+      errorMessage.value = '登录失败'
     }
   } finally {
     loading.value = false
