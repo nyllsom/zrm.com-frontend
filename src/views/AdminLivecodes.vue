@@ -175,6 +175,27 @@
                 placeholder="输入 block 内容"
                 class="w-full rounded-md border border-gray-200 bg-white px-2 py-2 font-mono text-xs leading-relaxed outline-none focus:border-[#40B3FF] dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
               />
+
+              <div class="admin-livecode-preview mt-3 border-t border-gray-100 pt-3 dark:border-gray-800">
+                <p class="mb-2 text-[11px] text-gray-400">实时预览</p>
+
+                <div
+                  v-if="block.type === 'markdown'"
+                  class="rounded-md bg-gray-50 p-3 text-sm leading-7 text-gray-800 dark:bg-gray-950 dark:text-gray-200"
+                >
+                  <AstRenderer
+                    v-for="(node, nodeIndex) in parseMarkdownNodes(block.content)"
+                    :key="nodeKey(node, nodeIndex)"
+                    :node="node"
+                  />
+                </div>
+                <div v-else class="rounded-md bg-gray-50 p-2 dark:bg-gray-950">
+                  <AstRenderer
+                    :key="`code-preview-${index}-${block.language || 'text'}-${block.content}`"
+                    :node="toCodeNode(block)"
+                  />
+                </div>
+              </div>
             </article>
 
             <p v-if="form.blocks.length === 0" class="text-xs text-gray-400">暂无 block，点击上方按钮添加。</p>
@@ -191,7 +212,11 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onBeforeUnmount, onMounted, provide, ref } from 'vue'
+import { unified } from 'unified'
+import remarkParse from 'remark-parse'
+import remarkGfm from 'remark-gfm'
+import remarkMath from 'remark-math'
 import {
   livecodesApi,
   type LivecodeBlock,
@@ -201,6 +226,7 @@ import {
   type LivecodeListItem,
   type LivecodeUpsertRequest,
 } from '@/api/livecodes'
+import AstRenderer from '@/components/AstRenderer.vue'
 
 interface EditableBlock {
   id?: string
@@ -222,6 +248,10 @@ const loading = ref(false)
 const message = ref('')
 const error = ref('')
 const original = ref<LivecodeDocument | null>(null)
+const isDark = ref(typeof document !== 'undefined' ? document.documentElement.classList.contains('dark') : false)
+let darkModeObserver: MutationObserver | null = null
+
+provide('isDark', isDark)
 
 const form = ref<LivecodeForm>(createEmptyForm())
 
@@ -251,6 +281,29 @@ function toPayload(block: EditableBlock): LivecodeBlockRequest {
     language: block.type === 'code' ? block.language?.trim() || undefined : undefined,
     content: block.content.trim(),
   }
+}
+
+function parseMarkdownNodes(content: string): any[] {
+  try {
+    const ast = unified().use(remarkParse).use(remarkGfm).use(remarkMath).parse(content || '')
+    return Array.isArray((ast as any).children) ? (ast as any).children : []
+  } catch {
+    return [{ type: 'paragraph', children: [{ type: 'text', value: content || '' }] }]
+  }
+}
+
+function toCodeNode(block: EditableBlock) {
+  return {
+    type: 'code',
+    lang: block.language || 'text',
+    value: block.content || '',
+  }
+}
+
+function nodeKey(node: any, index: number): string {
+  const value = typeof node?.value === 'string' ? node.value : ''
+  const lang = typeof node?.lang === 'string' ? node.lang : ''
+  return `${index}-${node?.type || 'unknown'}-${lang}-${value}`
 }
 
 function orderBlocks(doc: LivecodeDocument): LivecodeBlock[] {
@@ -532,6 +585,55 @@ async function deleteFile() {
 }
 
 onMounted(async () => {
+  if (typeof document !== 'undefined') {
+    darkModeObserver = new MutationObserver(() => {
+      isDark.value = document.documentElement.classList.contains('dark')
+    })
+    darkModeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    })
+  }
+
   await fetchFiles()
 })
+
+onBeforeUnmount(() => {
+  darkModeObserver?.disconnect()
+})
 </script>
+
+<style scoped>
+.admin-livecode-preview :deep(.ast-code-block) {
+  margin: 0;
+}
+
+.admin-livecode-preview :deep(.ast-code-frame) {
+  border: 1px solid #dbe1ea;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f9fafb;
+}
+
+.admin-livecode-preview :deep(.ast-code-meta) {
+  border-bottom: 1px solid #e5e7eb;
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.admin-livecode-preview :deep(.ast-code-content pre) {
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+:global(.dark) .admin-livecode-preview :deep(.ast-code-frame) {
+  border-color: #374151;
+  background: #0f172a;
+}
+
+:global(.dark) .admin-livecode-preview :deep(.ast-code-meta) {
+  border-bottom-color: #1f2937;
+  background: #111827;
+  color: #9ca3af;
+}
+</style>

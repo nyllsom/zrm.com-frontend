@@ -45,29 +45,45 @@
             </div>
             <button
               class="rounded-md bg-[#40B3FF] px-3 py-1.5 text-xs font-medium text-white hover:opacity-90"
-              @click="copyText(allContentText)"
+              @click="copyText(allContentText, 'all')"
             >
-              复制全部
+              {{ copiedAll ? '已复制全部' : '复制全部' }}
             </button>
           </div>
 
           <div class="space-y-3">
             <article
-              v-for="(block, index) in orderedBlocks"
-              :key="block.id || `block-${index}`"
+              v-for="item in renderedBlocks"
+              :key="item.block.id || `block-${item.index}`"
               class="rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-800 dark:bg-gray-900"
             >
               <div class="mb-2 flex items-center justify-between">
-                <p class="text-xs text-gray-500">Block #{{ index + 1 }} · {{ block.type }}<span v-if="block.language"> · {{ block.language }}</span></p>
+                <p class="text-xs text-gray-500">Block #{{ item.index + 1 }} · {{ item.block.type }}<span v-if="item.block.language"> · {{ item.block.language }}</span></p>
                 <button
-                  v-if="block.type === 'code'"
+                  v-if="item.block.type === 'code'"
                   class="rounded border border-gray-200 px-2 py-1 text-xs text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
-                  @click="copyText(block.content)"
+                  @click="copyText(item.block.content, 'block', item.block.id, item.index)"
                 >
-                  复制
+                  {{ copyButtonLabel(item.block.id, item.index) }}
                 </button>
               </div>
-              <pre class="overflow-x-auto rounded bg-gray-50 p-3 text-xs leading-relaxed text-gray-800 dark:bg-gray-950 dark:text-gray-200"><code>{{ block.content }}</code></pre>
+
+              <div
+                v-if="item.block.type === 'markdown'"
+                class="livecode-markdown text-sm leading-7 text-gray-800 dark:text-gray-200"
+              >
+                <AstRenderer
+                  v-for="(node, nodeIndex) in item.markdownNodes"
+                  :key="nodeKey(node, nodeIndex)"
+                  :node="node"
+                />
+              </div>
+              <div v-else class="livecode-code">
+                <AstRenderer
+                  :key="`code-${item.block.language || 'text'}-${item.block.content}`"
+                  :node="item.codeNode"
+                />
+              </div>
             </article>
           </div>
         </template>
@@ -79,8 +95,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, provide, ref } from 'vue'
+import { unified } from 'unified'
+import remarkParse from 'remark-parse'
+import remarkGfm from 'remark-gfm'
+import remarkMath from 'remark-math'
 import { livecodesApi, type LivecodeBlock, type LivecodeDocument, type LivecodeListItem } from '@/api/livecodes'
+import AstRenderer from '@/components/AstRenderer.vue'
 
 const files = ref<LivecodeListItem[]>([])
 const selectedFileId = ref('')
@@ -88,6 +109,13 @@ const currentDoc = ref<LivecodeDocument | null>(null)
 const loadingList = ref(false)
 const loadingDetail = ref(false)
 const error = ref('')
+const copiedAll = ref(false)
+const copiedBlockKey = ref('')
+const isDark = ref(typeof document !== 'undefined' ? document.documentElement.classList.contains('dark') : false)
+let darkModeObserver: MutationObserver | null = null
+let copyFeedbackTimer: ReturnType<typeof setTimeout> | null = null
+
+provide('isDark', isDark)
 
 const orderedBlocks = computed<LivecodeBlock[]>(() => {
   if (!currentDoc.value) return []
@@ -97,6 +125,24 @@ const orderedBlocks = computed<LivecodeBlock[]>(() => {
 
   const map = new Map((currentDoc.value.blocks || []).map((block) => [block.id, block]))
   return ids.map((id) => map.get(id)).filter((block): block is LivecodeBlock => Boolean(block))
+})
+
+const renderedBlocks = computed(() => {
+  return orderedBlocks.value.map((block, index) => {
+    if (block.type === 'markdown') {
+      return {
+        block,
+        index,
+        markdownNodes: parseMarkdownNodes(block.content),
+      }
+    }
+
+    return {
+      block,
+      index,
+      codeNode: toCodeNode(block),
+    }
+  })
 })
 
 const allContentText = computed(() => {
@@ -109,6 +155,52 @@ const allContentText = computed(() => {
     })
     .join('\n\n')
 })
+
+function parseMarkdownNodes(content: string): any[] {
+  try {
+    const ast = unified().use(remarkParse).use(remarkGfm).use(remarkMath).parse(content || '')
+    return Array.isArray((ast as any).children) ? (ast as any).children : []
+  } catch {
+    return [{ type: 'paragraph', children: [{ type: 'text', value: content || '' }] }]
+  }
+}
+
+function toCodeNode(block: LivecodeBlock) {
+  return {
+    type: 'code',
+    lang: block.language || 'text',
+    value: block.content || '',
+  }
+}
+
+function nodeKey(node: any, index: number): string {
+  const value = typeof node?.value === 'string' ? node.value : ''
+  const lang = typeof node?.lang === 'string' ? node.lang : ''
+  return `${index}-${node?.type || 'unknown'}-${lang}-${value}`
+}
+
+function blockCopyKey(blockId: string | undefined, index: number): string {
+  return blockId || `block-${index}`
+}
+
+function copyButtonLabel(blockId: string | undefined, index: number): string {
+  return copiedBlockKey.value === blockCopyKey(blockId, index) ? '已复制' : '复制'
+}
+
+function clearCopyFeedbackTimer() {
+  if (copyFeedbackTimer) {
+    clearTimeout(copyFeedbackTimer)
+    copyFeedbackTimer = null
+  }
+}
+
+function scheduleCopyFeedbackReset() {
+  clearCopyFeedbackTimer()
+  copyFeedbackTimer = setTimeout(() => {
+    copiedAll.value = false
+    copiedBlockKey.value = ''
+  }, 1500)
+}
 
 function formatDate(date?: string): string {
   if (!date) return '未知日期'
@@ -123,11 +215,20 @@ function formatDate(date?: string): string {
   })
 }
 
-async function copyText(text: string) {
+async function copyText(text: string, target: 'all' | 'block', blockId?: string, blockIndex?: number) {
   if (!text) return
 
   try {
     await navigator.clipboard.writeText(text)
+    error.value = ''
+    if (target === 'all') {
+      copiedAll.value = true
+      copiedBlockKey.value = ''
+    } else {
+      copiedAll.value = false
+      copiedBlockKey.value = blockCopyKey(blockId, blockIndex || 0)
+    }
+    scheduleCopyFeedbackReset()
   } catch {
     error.value = '复制失败，请手动复制'
   }
@@ -175,6 +276,60 @@ async function selectFile(fileId: string) {
 }
 
 onMounted(async () => {
+  if (typeof document !== 'undefined') {
+    darkModeObserver = new MutationObserver(() => {
+      isDark.value = document.documentElement.classList.contains('dark')
+    })
+    darkModeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    })
+  }
+
   await fetchFiles()
 })
+
+onBeforeUnmount(() => {
+  darkModeObserver?.disconnect()
+  clearCopyFeedbackTimer()
+})
 </script>
+
+<style scoped>
+.livecode-markdown :deep(.ast-paragraph:last-child) {
+  margin-bottom: 0;
+}
+
+.livecode-code :deep(.ast-code-block) {
+  margin: 0;
+}
+
+.livecode-code :deep(.ast-code-frame) {
+  border: 1px solid #dbe1ea;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f9fafb;
+}
+
+.livecode-code :deep(.ast-code-meta) {
+  border-bottom: 1px solid #e5e7eb;
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.livecode-code :deep(.ast-code-content pre) {
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+:global(.dark) .livecode-code :deep(.ast-code-frame) {
+  border-color: #374151;
+  background: #0f172a;
+}
+
+:global(.dark) .livecode-code :deep(.ast-code-meta) {
+  border-bottom-color: #1f2937;
+  background: #111827;
+  color: #9ca3af;
+}
+</style>
