@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-white dark:bg-gray-950 transition-colors duration-300">
     <Header v-if="!isImmersiveGallery" />
-    <router-view :class="isImmersiveGallery ? '' : 'mt-10'" />
+    <router-view :class="isImmersiveGallery ? '' : 'mt-14'" />
   </div>
 </template>
 

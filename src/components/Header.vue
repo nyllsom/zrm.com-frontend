@@ -121,11 +121,12 @@ const navLinks = [
   { name: '首页', href: '/' },
   { name: '活动推文', href: '/activity-posts' },
   { name: '技术教程', href: '/tech-tutorials' },
-  { name: 'LiveCode', href: '/livecodes' },
-  { name: '画廊', href: '/gallery' },
+  // { name: 'LiveCode', href: '/livecodes' },
+
   { name: '关于我们', href: '/about' },
   { name: '荣誉墙', href: '/honor-wall' },
   { name: '成员墙', href: '/member-wall' },
+    { name: '画廊', href: '/gallery' },
   { name: '技术论坛', href: 'https://forum.nju-aia.com/', isExternal: true },
 ]
 </script>

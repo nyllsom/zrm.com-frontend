@@ -8,13 +8,13 @@ export interface LivecodeBlock {
   type: LivecodeBlockType
   language?: string
   content: string
-  order: number
 }
 
 export interface LivecodeDocument {
   id: string
   slug: string
   publishedAt: string
+  blockIds?: string[]
   blocks: LivecodeBlock[]
 }
 
@@ -32,13 +32,19 @@ export interface LivecodeBlockRequest {
   type: LivecodeBlockType
   language?: string
   content: string
-  order: number
 }
 
 export interface LivecodeUpsertRequest {
   slug: string
   publishedAt: string
-  blocks: LivecodeBlockRequest[]
+}
+
+export interface LivecodeCreateResponse {
+  id: string
+}
+
+export interface LivecodeBlockIdsRequest {
+  blockIds: string[]
 }
 
 const livecodeApiBaseUrl = import.meta.env.VITE_LIVECODE_API_BASE_URL || '/livecodes-api'
@@ -80,12 +86,24 @@ export const livecodesApi = {
     return http.get<LivecodeDocument>(`/livecodes/${id}`)
   },
 
-  create(data: LivecodeUpsertRequest) {
-    return http.post<Record<string, string>>('/livecodes', data)
+  createDocument(data: LivecodeUpsertRequest) {
+    return http.post<LivecodeCreateResponse>('/livecodes', data)
   },
 
-  update(id: string, data: LivecodeUpsertRequest) {
-    return http.put<void>(`/livecodes/${id}`, data)
+  createBlock(id: string, data: LivecodeBlockRequest) {
+    return http.post<LivecodeBlock>(`/livecodes/${id}/blocks`, data)
+  },
+
+  updateBlock(id: string, blockId: string, data: LivecodeBlockRequest) {
+    return http.put<LivecodeBlock>(`/livecodes/${id}/blocks/${blockId}`, data)
+  },
+
+  removeBlock(id: string, blockId: string) {
+    return http.delete<void>(`/livecodes/${id}/blocks/${blockId}`)
+  },
+
+  updateBlockIds(id: string, data: LivecodeBlockIdsRequest) {
+    return http.put<void>(`/livecodes/${id}/block-ids`, data)
   },
 
   remove(id: string) {

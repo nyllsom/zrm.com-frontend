@@ -1,198 +1,200 @@
-<template>
-  <div class="h-[calc(100vh-3.5rem)] overflow-hidden bg-white dark:bg-gray-950">
-    <div class="grid h-full grid-cols-1 md:grid-cols-3">
-      <aside class="border-r border-gray-100 p-3 dark:border-gray-800">
-        <div class="mb-3 flex items-center justify-between">
-          <p class="text-xs text-gray-400">Livecodes ({{ items.length }})</p>
-          <div class="flex items-center gap-1">
+﻿<template>
+  <div class="h-[calc(100vh-3.5rem)] overflow-hidden bg-gray-50 dark:bg-gray-950">
+    <div class="flex h-full">
+      <aside class="flex w-[300px] flex-col border-r border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
+        <div class="border-b border-gray-200 p-3 dark:border-gray-800">
+          <div class="mb-2 flex items-center justify-between">
+            <h2 class="text-sm font-semibold text-gray-900 dark:text-gray-100">代码文件</h2>
+            <span class="text-xs text-gray-400">{{ files.length }}</span>
+          </div>
+          <div class="flex gap-2">
             <button
-              class="rounded border border-gray-200 px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
-              @click="fetchList"
+              class="rounded-md border border-gray-200 px-2 py-1 text-xs text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+              @click="fetchFiles"
             >
               刷新
             </button>
             <button
-              class="rounded bg-[#40B3FF] px-2 py-1 text-xs font-medium text-white hover:opacity-90"
-              @click="createNew"
+              class="rounded-md bg-[#40B3FF] px-2 py-1 text-xs font-medium text-white hover:opacity-90"
+              @click="startCreateFile"
             >
-              新建
+              新建文件
             </button>
           </div>
         </div>
-        <p v-if="loading" class="mb-2 text-xs text-gray-400">加载中...</p>
 
-        <div class="space-y-1 overflow-y-auto">
+        <div class="flex-1 overflow-y-auto p-2">
           <button
-            v-for="item in items"
-            :key="item.id"
-            class="w-full rounded-lg border px-3 py-2 text-left transition-colors"
+            v-for="file in files"
+            :key="file.id"
+            class="mb-1 w-full rounded-md border px-3 py-2 text-left transition-colors"
             :class="
-              selectedId === item.id
-                ? 'border-blue-100 bg-blue-50 text-[#40B3FF] dark:border-blue-900/50 dark:bg-blue-950/30'
+              selectedFileId === file.id
+                ? 'border-blue-200 bg-blue-50 text-[#40B3FF] dark:border-blue-900/50 dark:bg-blue-950/30'
                 : 'border-transparent text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800'
             "
-            @click="selectItem(item.id)"
+            @click="selectFile(file.id)"
           >
-            <p class="truncate text-sm font-medium">{{ item.slug }}</p>
-            <p class="mt-0.5 text-[11px] text-gray-400">{{ item.publishedAt || '未设置日期' }}</p>
+            <p class="truncate text-sm font-medium">{{ file.slug }}</p>
+            <p class="mt-0.5 text-[11px] text-gray-400">{{ file.publishedAt || '未设置日期' }}</p>
           </button>
         </div>
       </aside>
 
-      <section class="border-r border-gray-100 p-4 dark:border-gray-800 md:col-span-1">
-        <div class="mb-3 flex items-center justify-between">
-          <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-            {{ isCreating ? '新建 livecode' : '编辑 livecode' }}
-          </p>
-          <div class="flex items-center gap-1">
-            <button
-              class="rounded border border-gray-200 px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
-              @click="resetForm"
-            >
-              重置
-            </button>
-            <button
-              class="rounded bg-[#40B3FF] px-2 py-1 text-xs font-medium text-white hover:opacity-90 disabled:opacity-50"
-              :disabled="saving"
-              @click="saveDocument"
-            >
-              {{ saving ? '保存中...' : '保存' }}
-            </button>
-            <button
-              v-if="selectedId && !isCreating"
-              class="rounded border border-red-200 bg-red-50 px-2 py-1 text-xs text-red-600 hover:bg-red-100 dark:border-red-900/60 dark:bg-red-950/20 dark:text-red-400"
-              :disabled="saving"
-              @click="deleteDocument"
-            >
-              删除
-            </button>
+      <main class="flex min-w-0 flex-1 flex-col">
+        <div class="border-b border-gray-200 bg-white p-3 dark:border-gray-800 dark:bg-gray-900">
+          <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <h1 class="text-sm font-semibold text-gray-900 dark:text-gray-100">文件与 Block 编辑</h1>
+            <div class="flex flex-wrap gap-2">
+              <button
+                class="rounded-md border border-gray-200 px-2 py-1 text-xs text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+                @click="resetCurrent"
+              >
+                重置
+              </button>
+              <button
+                class="rounded-md bg-[#40B3FF] px-2 py-1 text-xs font-medium text-white hover:opacity-90 disabled:opacity-50"
+                :disabled="saving"
+                @click="saveFile"
+              >
+                {{ saving ? '保存中...' : '保存文件' }}
+              </button>
+              <button
+                v-if="selectedFileId"
+                class="rounded-md border border-red-200 bg-red-50 px-2 py-1 text-xs text-red-600 hover:bg-red-100 dark:border-red-900/50 dark:bg-red-950/20 dark:text-red-400"
+                :disabled="saving"
+                @click="deleteFile"
+              >
+                删除文件
+              </button>
+            </div>
           </div>
+
+          <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <div>
+              <label class="mb-1 block text-xs text-gray-500">Slug</label>
+              <input
+                v-model.trim="form.slug"
+                type="text"
+                placeholder="python-basic-demo"
+                :disabled="Boolean(selectedFileId)"
+                class="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-[#40B3FF] disabled:opacity-60 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+              />
+            </div>
+            <div>
+              <label class="mb-1 block text-xs text-gray-500">发布日期</label>
+              <input
+                v-model="form.publishedAt"
+                type="date"
+                :disabled="Boolean(selectedFileId)"
+                class="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-[#40B3FF] disabled:opacity-60 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+              />
+            </div>
+          </div>
+          <p class="mt-2 text-[11px] text-gray-400">文件层通过 `/livecodes` 接口保存，Block 层通过 `/blocks` 接口单独增删改。</p>
         </div>
 
-        <div class="space-y-3">
-          <div>
-            <label class="mb-1 block text-xs text-gray-500">Slug</label>
-            <input
-              v-model.trim="form.slug"
-              type="text"
-              placeholder="python-basic-demo"
-              class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-[#40B3FF] dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-            />
-          </div>
-
-          <div>
-            <label class="mb-1 block text-xs text-gray-500">发布日期</label>
-            <input
-              v-model="form.publishedAt"
-              type="date"
-              class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-[#40B3FF] dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-            />
-          </div>
-
-          <div class="pt-1">
-            <div class="mb-2 flex items-center justify-between">
-              <p class="text-xs text-gray-500">Blocks</p>
-              <div class="flex items-center gap-1">
-                <button
-                  class="rounded border border-gray-200 px-2 py-1 text-[11px] text-gray-600 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
-                  @click="addBlock('markdown')"
-                >
-                  + Markdown
-                </button>
-                <button
-                  class="rounded border border-gray-200 px-2 py-1 text-[11px] text-gray-600 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
-                  @click="addBlock('code')"
-                >
-                  + Code
-                </button>
-              </div>
-            </div>
-
-            <div class="max-h-[58vh] space-y-2 overflow-y-auto pr-1">
-              <article
-                v-for="(block, index) in form.blocks"
-                :key="`block-${index}`"
-                class="rounded-lg border border-gray-100 p-2 dark:border-gray-800"
+        <div class="min-h-0 flex-1 overflow-y-auto p-3">
+          <div class="mb-3 flex items-center justify-between">
+            <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">Block 列表</h3>
+            <div class="flex gap-2">
+              <button
+                class="rounded-md border border-gray-200 px-2 py-1 text-xs text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+                @click="addDraftBlock('markdown')"
               >
-                <div class="mb-2 grid grid-cols-3 gap-2">
-                  <select
-                    v-model="block.type"
-                    class="rounded border border-gray-200 bg-white px-2 py-1 text-xs outline-none focus:border-[#40B3FF] dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                  >
-                    <option value="markdown">markdown</option>
-                    <option value="code">code</option>
-                  </select>
-                  <input
-                    v-model.number="block.order"
-                    type="number"
-                    min="1"
-                    class="rounded border border-gray-200 bg-white px-2 py-1 text-xs outline-none focus:border-[#40B3FF] dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                  />
+                + Markdown
+              </button>
+              <button
+                class="rounded-md border border-gray-200 px-2 py-1 text-xs text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+                @click="addDraftBlock('code')"
+              >
+                + Code
+              </button>
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            <article
+              v-for="(block, index) in form.blocks"
+              :key="block.id || `draft-${index}`"
+              class="rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-800 dark:bg-gray-900"
+            >
+              <div class="mb-2 flex items-center justify-between">
+                <p class="text-xs text-gray-500">Block #{{ index + 1 }} <span v-if="block.id" class="text-gray-400">({{ block.id }})</span></p>
+                <div class="flex gap-2">
                   <button
-                    class="rounded border border-red-200 px-2 py-1 text-xs text-red-500 hover:bg-red-50 dark:border-red-900/60 dark:hover:bg-red-950/20"
-                    @click="removeBlock(index)"
+                    class="rounded border border-gray-200 px-2 py-1 text-xs text-gray-700 hover:bg-gray-100 disabled:opacity-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+                    :disabled="index === 0"
+                    @click="moveBlock(index, -1)"
+                  >
+                    上移
+                  </button>
+                  <button
+                    class="rounded border border-gray-200 px-2 py-1 text-xs text-gray-700 hover:bg-gray-100 disabled:opacity-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+                    :disabled="index === form.blocks.length - 1"
+                    @click="moveBlock(index, 1)"
+                  >
+                    下移
+                  </button>
+                  <button
+                    class="rounded border border-gray-200 px-2 py-1 text-xs text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+                    :disabled="!selectedFileId"
+                    @click="saveSingleBlock(index)"
+                  >
+                    {{ block.id ? '更新Block' : '创建Block' }}
+                  </button>
+                  <button
+                    class="rounded border border-red-200 px-2 py-1 text-xs text-red-600 hover:bg-red-50 dark:border-red-900/50 dark:text-red-400 dark:hover:bg-red-950/20"
+                    @click="removeSingleBlock(index)"
                   >
                     删除
                   </button>
                 </div>
+              </div>
 
+              <div class="mb-2 grid grid-cols-1 gap-2 md:grid-cols-2">
+                <select
+                  v-model="block.type"
+                  class="rounded-md border border-gray-200 bg-white px-2 py-1.5 text-xs outline-none focus:border-[#40B3FF] dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                >
+                  <option value="markdown">markdown</option>
+                  <option value="code">code</option>
+                </select>
                 <input
                   v-model.trim="block.language"
                   type="text"
                   :disabled="block.type !== 'code'"
                   placeholder="语言：python / js / cpp"
-                  class="mb-2 w-full rounded border border-gray-200 bg-white px-2 py-1 text-xs outline-none focus:border-[#40B3FF] disabled:opacity-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                  class="rounded-md border border-gray-200 bg-white px-2 py-1.5 text-xs outline-none focus:border-[#40B3FF] disabled:opacity-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
                 />
-                <textarea
-                  v-model="block.content"
-                  rows="5"
-                  placeholder="输入 block 内容"
-                  class="w-full rounded border border-gray-200 bg-white px-2 py-1.5 font-mono text-xs leading-relaxed outline-none focus:border-[#40B3FF] dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                />
-              </article>
-            </div>
+              </div>
+
+              <textarea
+                v-model="block.content"
+                rows="8"
+                placeholder="输入 block 内容"
+                class="w-full rounded-md border border-gray-200 bg-white px-2 py-2 font-mono text-xs leading-relaxed outline-none focus:border-[#40B3FF] dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+              />
+            </article>
+
+            <p v-if="form.blocks.length === 0" class="text-xs text-gray-400">暂无 block，点击上方按钮添加。</p>
           </div>
-
-          <p v-if="message" class="text-xs text-emerald-500">{{ message }}</p>
-          <p v-if="error" class="text-xs text-red-500">{{ error }}</p>
-        </div>
-      </section>
-
-      <section class="p-4 md:col-span-1">
-        <div class="mb-3 flex items-center justify-between border-b border-gray-100 pb-2 dark:border-gray-800">
-          <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">实时预览</p>
-          <button
-            class="rounded border border-gray-200 px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
-            @click="copyPreview"
-          >
-            复制整篇
-          </button>
         </div>
 
-        <div class="max-h-[72vh] space-y-2 overflow-y-auto">
-          <article
-            v-for="(block, index) in previewBlocks"
-            :key="`preview-${index}`"
-            class="rounded-lg border border-gray-100 p-3 dark:border-gray-800"
-          >
-            <p class="mb-2 text-[11px] text-gray-400">
-              #{{ block.order }} · {{ block.type }}<span v-if="block.language"> · {{ block.language }}</span>
-            </p>
-            <pre
-              class="overflow-x-auto rounded bg-gray-50 p-2 text-xs leading-relaxed text-gray-800 dark:bg-gray-900 dark:text-gray-200"
-            ><code>{{ block.content }}</code></pre>
-          </article>
-          <p v-if="previewBlocks.length === 0" class="text-sm text-gray-400">暂无内容</p>
+        <div v-if="message || error" class="border-t border-gray-200 bg-white px-3 py-2 text-xs dark:border-gray-800 dark:bg-gray-900">
+          <p v-if="message" class="text-emerald-600 dark:text-emerald-400">{{ message }}</p>
+          <p v-if="error" class="text-red-600 dark:text-red-400">{{ error }}</p>
         </div>
-      </section>
+      </main>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import {
   livecodesApi,
+  type LivecodeBlock,
   type LivecodeBlockRequest,
   type LivecodeBlockType,
   type LivecodeDocument,
@@ -200,161 +202,131 @@ import {
   type LivecodeUpsertRequest,
 } from '@/api/livecodes'
 
-interface FormBlock extends LivecodeBlockRequest {
+interface EditableBlock {
   id?: string
+  type: LivecodeBlockType
+  language?: string
+  content: string
 }
 
-interface FormState {
+interface LivecodeForm {
   slug: string
   publishedAt: string
-  blocks: FormBlock[]
+  blocks: EditableBlock[]
 }
 
-const items = ref<LivecodeListItem[]>([])
-const selectedId = ref('')
-const isCreating = ref(false)
+const files = ref<LivecodeListItem[]>([])
+const selectedFileId = ref('')
 const saving = ref(false)
-const error = ref('')
-const message = ref('')
 const loading = ref(false)
+const message = ref('')
+const error = ref('')
+const original = ref<LivecodeDocument | null>(null)
 
-const form = ref<FormState>(createEmptyForm())
+const form = ref<LivecodeForm>(createEmptyForm())
 
-function today() {
-  return new Date().toISOString().slice(0, 10)
-}
-
-function createBlock(type: LivecodeBlockType, order: number): FormBlock {
-  return {
-    type,
-    order,
-    language: type === 'code' ? 'python' : '',
-    content: '',
-  }
-}
-
-function createEmptyForm(): FormState {
+function createEmptyForm(): LivecodeForm {
   return {
     slug: '',
-    publishedAt: today(),
-    blocks: [createBlock('code', 1)],
+    publishedAt: new Date().toISOString().slice(0, 10),
+    blocks: [],
   }
 }
 
-const previewBlocks = computed(() => {
-  return [...form.value.blocks].sort((a, b) => a.order - b.order)
-})
-
-function resetMessage() {
-  error.value = ''
+function resetStatus() {
   message.value = ''
+  error.value = ''
 }
 
-function createNew() {
-  selectedId.value = ''
-  isCreating.value = true
+function startCreateFile() {
+  selectedFileId.value = ''
+  original.value = null
   form.value = createEmptyForm()
-  resetMessage()
+  resetStatus()
 }
 
-function resetForm() {
-  if (isCreating.value || !selectedId.value) {
-    form.value = createEmptyForm()
-    return
+function toPayload(block: EditableBlock): LivecodeBlockRequest {
+  return {
+    type: block.type,
+    language: block.type === 'code' ? block.language?.trim() || undefined : undefined,
+    content: block.content.trim(),
   }
-  void selectItem(selectedId.value)
 }
 
-function addBlock(type: LivecodeBlockType) {
-  const order = form.value.blocks.length + 1
-  form.value.blocks.push(createBlock(type, order))
+function orderBlocks(doc: LivecodeDocument): LivecodeBlock[] {
+  const ids = doc.blockIds || []
+  if (ids.length === 0) return doc.blocks || []
+
+  const map = new Map((doc.blocks || []).map((block) => [block.id, block]))
+  return ids.map((id) => map.get(id)).filter((block): block is LivecodeBlock => Boolean(block))
 }
 
-function removeBlock(index: number) {
-  form.value.blocks.splice(index, 1)
-  normalizeBlockOrder()
-}
-
-function normalizeBlockOrder() {
-  const sorted = [...form.value.blocks].sort((a, b) => a.order - b.order)
-  form.value.blocks = sorted.map((block, index) => ({
-    ...block,
-    order: index + 1,
-  }))
-}
-
-function applyDetail(detail: LivecodeDocument) {
+function applyDocument(doc: LivecodeDocument) {
+  const ordered = orderBlocks(doc)
   form.value = {
-    slug: detail.slug || '',
-    publishedAt: detail.publishedAt || today(),
-    blocks: Array.isArray(detail.blocks) && detail.blocks.length > 0
-      ? detail.blocks
-          .map((block) => ({
-            id: block.id,
-            type: block.type,
-            order: block.order,
-            language: block.language || '',
-            content: block.content || '',
-          }))
-          .sort((a, b) => a.order - b.order)
-      : [createBlock('code', 1)],
+    slug: doc.slug || '',
+    publishedAt: doc.publishedAt || new Date().toISOString().slice(0, 10),
+    blocks: ordered.map((block) => ({
+      id: block.id,
+      type: block.type,
+      language: block.language || '',
+      content: block.content || '',
+    })),
   }
 }
 
-async function fetchList() {
+async function fetchFiles() {
   loading.value = true
-  resetMessage()
+  resetStatus()
 
   try {
     const { data } = await livecodesApi.list()
-    items.value = Array.isArray(data.items) ? data.items : []
+    files.value = Array.isArray(data.items) ? data.items : []
 
-    if (items.value.length === 0) {
-      createNew()
+    if (files.value.length === 0) {
+      startCreateFile()
       return
     }
 
-    if (!selectedId.value || !items.value.some((item) => item.id === selectedId.value)) {
-      await selectItem(items.value[0].id)
+    const exists = files.value.some((item) => item.id === selectedFileId.value)
+    const nextId = exists ? selectedFileId.value : files.value[0].id
+
+    if (nextId) {
+      await selectFile(nextId)
     }
   } catch (err) {
-    error.value = err instanceof Error ? err.message : '加载列表失败'
+    error.value = err instanceof Error ? err.message : '加载文件列表失败'
   } finally {
     loading.value = false
   }
 }
 
-async function selectItem(id: string) {
+async function selectFile(id: string) {
   if (!id) return
-
-  selectedId.value = id
-  isCreating.value = false
-  resetMessage()
+  resetStatus()
 
   try {
     const { data } = await livecodesApi.getById(id)
-    applyDetail(data)
+    selectedFileId.value = id
+    original.value = data
+    applyDocument(data)
   } catch (err) {
-    error.value = err instanceof Error ? err.message : '加载详情失败'
+    error.value = err instanceof Error ? err.message : '加载文件详情失败'
   }
 }
 
-function buildPayload(): LivecodeUpsertRequest | null {
+function resetCurrent() {
+  if (!original.value) {
+    startCreateFile()
+    return
+  }
+  applyDocument(original.value)
+  resetStatus()
+}
+
+function ensureFileMeta(): LivecodeUpsertRequest | null {
   const slug = form.value.slug.trim()
   const publishedAt = form.value.publishedAt.trim()
-  const blocks = [...form.value.blocks]
-    .map((block) => ({
-      type: block.type,
-      order: Number(block.order),
-      language: block.type === 'code' ? block.language?.trim() || undefined : undefined,
-      content: block.content,
-    }))
-    .filter((block) => block.content.trim().length > 0)
-    .sort((a, b) => a.order - b.order)
-    .map((block, index) => ({
-      ...block,
-      order: index + 1,
-    }))
 
   if (!slug) {
     error.value = 'slug 不能为空'
@@ -366,46 +338,87 @@ function buildPayload(): LivecodeUpsertRequest | null {
     return null
   }
 
-  if (blocks.length === 0) {
-    error.value = '至少需要一个非空 block'
-    return null
-  }
-
-  return {
-    slug,
-    publishedAt,
-    blocks,
-  }
+  return { slug, publishedAt }
 }
 
-async function saveDocument() {
-  resetMessage()
+async function syncOrder(fileId: string) {
+  const ids = form.value.blocks.map((block) => block.id).filter((id): id is string => Boolean(id))
+  await livecodesApi.updateBlockIds(fileId, { blockIds: ids })
+}
 
-  const payload = buildPayload()
-  if (!payload) return
+function validateBlock(block: EditableBlock): string {
+  if (!block.content.trim()) return 'block content 不能为空'
+  if (block.type === 'code' && !block.language?.trim()) return 'code block 必须填写 language'
+  return ''
+}
+
+async function saveFile() {
+  resetStatus()
+
+  const meta = ensureFileMeta()
+  if (!meta) return
 
   saving.value = true
 
   try {
-    if (selectedId.value && !isCreating.value) {
-      await livecodesApi.update(selectedId.value, payload)
-      message.value = '更新成功'
-      await selectItem(selectedId.value)
-    } else {
-      const { data } = await livecodesApi.create(payload)
-      message.value = '创建成功'
-      await fetchList()
+    if (!selectedFileId.value) {
+      const createRes = await livecodesApi.createDocument(meta)
+      const fileId = createRes.data?.id || ''
 
-      const createdId = typeof data?.id === 'string' ? data.id : ''
-      if (createdId) {
-        await selectItem(createdId)
-      } else {
-        const matched = items.value.find((item) => item.slug === payload.slug)
-        if (matched) {
-          await selectItem(matched.id)
+      if (!fileId) {
+        throw new Error('文件创建成功，但未获取到文件 ID')
+      }
+
+      selectedFileId.value = fileId
+
+      for (let i = 0; i < form.value.blocks.length; i += 1) {
+        const block = form.value.blocks[i]
+        if (!block.content.trim()) continue
+
+        const invalidMessage = validateBlock(block)
+        if (invalidMessage) {
+          throw new Error(`Block #${i + 1}: ${invalidMessage}`)
         }
+
+        const res = await livecodesApi.createBlock(fileId, toPayload(block))
+        form.value.blocks[i].id = res.data.id
+      }
+
+      form.value.blocks = form.value.blocks.filter((block) => block.id)
+      await syncOrder(fileId)
+
+      await fetchFiles()
+      await selectFile(fileId)
+      message.value = '文件创建并保存完成'
+      return
+    }
+
+    for (let i = 0; i < form.value.blocks.length; i += 1) {
+      const block = form.value.blocks[i]
+      if (!block.content.trim()) {
+        if (block.id) {
+          throw new Error(`Block #${i + 1}: 已有 block 内容不能为空，请删除该 block 或填写内容`)
+        }
+        continue
+      }
+
+      const invalidMessage = validateBlock(block)
+      if (invalidMessage) {
+        throw new Error(`Block #${i + 1}: ${invalidMessage}`)
+      }
+
+      if (block.id) {
+        await livecodesApi.updateBlock(selectedFileId.value, block.id, toPayload(block))
+      } else {
+        const res = await livecodesApi.createBlock(selectedFileId.value, toPayload(block))
+        form.value.blocks[i].id = res.data.id
       }
     }
+
+    form.value.blocks = form.value.blocks.filter((block) => block.id)
+    await syncOrder(selectedFileId.value)
+    await selectFile(selectedFileId.value)
+    message.value = '文件已保存'
   } catch (err) {
     error.value = err instanceof Error ? err.message : '保存失败'
   } finally {
@@ -413,48 +426,112 @@ async function saveDocument() {
   }
 }
 
-async function deleteDocument() {
-  if (!selectedId.value || isCreating.value) return
+function addDraftBlock(type: LivecodeBlockType) {
+  form.value.blocks.push({
+    type,
+    language: type === 'code' ? 'python' : undefined,
+    content: '',
+  })
+}
 
-  const confirmed = window.confirm(`确认删除 livecode "${form.value.slug}" 吗？`)
-  if (!confirmed) return
+async function moveBlock(index: number, direction: -1 | 1) {
+  const nextIndex = index + direction
+  if (nextIndex < 0 || nextIndex >= form.value.blocks.length) return
 
-  resetMessage()
-  saving.value = true
+  const [target] = form.value.blocks.splice(index, 1)
+  form.value.blocks.splice(nextIndex, 0, target)
+
+  const fileId = selectedFileId.value
+  if (!fileId) return
 
   try {
-    await livecodesApi.remove(selectedId.value)
-    message.value = '删除成功'
-    createNew()
-    await fetchList()
+    await syncOrder(fileId)
+    message.value = 'Block 顺序已更新'
   } catch (err) {
-    error.value = err instanceof Error ? err.message : '删除失败'
-  } finally {
-    saving.value = false
+    error.value = err instanceof Error ? err.message : '更新顺序失败'
   }
 }
 
-async function copyPreview() {
-  const text = previewBlocks.value
-    .map((block) => {
-      if (block.type === 'code') {
-        return `\`\`\`${block.language || ''}\n${block.content}\n\`\`\``
-      }
-      return block.content
-    })
-    .join('\n\n')
+async function saveSingleBlock(index: number) {
+  resetStatus()
 
-  if (!text) return
+  const fileId = selectedFileId.value
+  if (!fileId) {
+    error.value = '请先保存文件，再保存单个 block'
+    return
+  }
+
+  const block = form.value.blocks[index]
+  if (!block || !block.content.trim()) {
+    error.value = 'block 内容不能为空'
+    return
+  }
+
+  const invalidMessage = validateBlock(block)
+  if (invalidMessage) {
+    error.value = `Block #${index + 1}: ${invalidMessage}`
+    return
+  }
 
   try {
-    await navigator.clipboard.writeText(text)
-    message.value = '已复制'
-  } catch {
-    error.value = '复制失败，请手动复制'
+    if (block.id) {
+      await livecodesApi.updateBlock(fileId, block.id, toPayload(block))
+      message.value = `Block #${index + 1} 更新成功`
+    } else {
+      const res = await livecodesApi.createBlock(fileId, toPayload(block))
+      form.value.blocks[index].id = res.data.id
+      await syncOrder(fileId)
+      message.value = `Block #${index + 1} 创建成功`
+    }
+  } catch (err) {
+    error.value = err instanceof Error ? err.message : '保存 block 失败'
+  }
+}
+
+async function removeSingleBlock(index: number) {
+  resetStatus()
+
+  const fileId = selectedFileId.value
+  const block = form.value.blocks[index]
+  if (!block) return
+
+  try {
+    if (fileId && block.id) {
+      await livecodesApi.removeBlock(fileId, block.id)
+    }
+
+    form.value.blocks.splice(index, 1)
+
+    if (fileId) {
+      await syncOrder(fileId)
+    }
+
+    message.value = `Block #${index + 1} 已删除`
+  } catch (err) {
+    error.value = err instanceof Error ? err.message : '删除 block 失败'
+  }
+}
+
+async function deleteFile() {
+  const id = selectedFileId.value
+  if (!id) return
+
+  const confirmed = window.confirm(`确认删除文件 ${form.value.slug} 吗？`)
+  if (!confirmed) return
+
+  resetStatus()
+
+  try {
+    await livecodesApi.remove(id)
+    startCreateFile()
+    await fetchFiles()
+    message.value = '文件已删除'
+  } catch (err) {
+    error.value = err instanceof Error ? err.message : '删除文件失败'
   }
 }
 
 onMounted(async () => {
-  await fetchList()
+  await fetchFiles()
 })
 </script>

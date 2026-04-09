@@ -23,7 +23,7 @@ export default defineConfig({
       '/livecodes-api': {
         target: 'http://192.168.1.87:8080',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/livecodes-api/, ''),
+        rewrite: (path) => path.replace(/^\/livecodes-api/, '/api'),
       },
     },
   },
