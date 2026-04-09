@@ -95,14 +95,17 @@
                       : 'text-gray-300 dark:text-gray-600 hover:text-[#40B3FF]'"
                     title="切换渲染模式"
                   >
-                    <svg v-if="documentModes[doc.id] === 'article'" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                    </svg>
-                    <svg v-else-if="documentModes[doc.id] === 'slide'" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg v-if="documentModes[doc.id] === 'slide'" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"/>
                     </svg>
-                    <svg v-else class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg v-else-if="documentModes[doc.id] === 'technical'" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <svg v-else-if="documentModes[doc.id] === 'minimal'" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                    <svg v-else class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 6.5h10M7 12h10M7 17.5h6M5 4h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5a1 1 0 011-1z"/>
                     </svg>
                   </button>
 
@@ -218,6 +221,18 @@
             </div>
           </div>
 
+          <div class="flex items-center gap-2">
+            <label for="reader-style-select" class="text-xs text-gray-500 dark:text-gray-400">风格</label>
+            <select
+              id="reader-style-select"
+              :value="currentViewMode"
+              @change="setCurrentViewMode(($event.target as HTMLSelectElement).value)"
+              class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-2.5 py-1 text-xs text-gray-700 dark:text-gray-200 outline-none focus:border-[#40B3FF]"
+            >
+              <option v-for="mode in availableViewModes" :key="mode" :value="mode">{{ mode }}</option>
+            </select>
+          </div>
+
           <!-- 右侧：视图模式切换 + 幻灯片计数 -->
           <!-- <div class="flex items-center gap-1.5 shrink-0">
             <div
@@ -293,16 +308,28 @@
         <!-- Content -->
         <div class="flex-1 overflow-y-auto custom-scrollbar">
           <transition name="fade-view" mode="out-in">
-            <HomeworkView
-              v-if="currentViewMode === 'homework'"
-              :slides="slides"
-            />
             <SlideView
-              v-else-if="currentViewMode === 'slide' && slides.length > 0"
+              v-if="currentViewMode === 'slide' && slides.length > 0"
               :slide="slides[currentSlideIndex]"
             />
-            <ArticleView
-              v-else-if="currentViewMode === 'article'"
+            <ColorView
+              v-else-if="currentViewMode === 'color'"
+              :slides="slides"
+            />
+            <ElegantView
+              v-else-if="currentViewMode === 'elegant'"
+              :slides="slides"
+            />
+            <LineView
+              v-else-if="currentViewMode === 'line'"
+              :slides="slides"
+            />
+            <MinimalView
+              v-else-if="currentViewMode === 'minimal'"
+              :slides="slides"
+            />
+            <TechnicalView
+              v-else-if="currentViewMode === 'technical'"
               :slides="slides"
             />
             <div
@@ -347,10 +374,14 @@ import { ref, computed, onMounted, onUnmounted, provide, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useTheme } from '@/composables/useTheme';
 import { useReaderStore } from '@/stores/reader';
+import type { ArticleMode } from '@/api/articles';
 
-import HomeworkView from '@/components/HomeworkView.vue';
 import SlideView from '@/components/SlideView.vue';
-import ArticleView from '@/components/ArticleView.vue';
+import ColorView from '@/components/ColorView.vue';
+import ElegantView from '@/components/ElegantView.vue';
+import LineView from '@/components/LineView.vue';
+import MinimalView from '@/components/MinimalView.vue';
+import TechnicalView from '@/components/TechnicalView.vue';
 
 const ASSET_BASE_URL = import.meta.env.VITE_ASSET_BASE_URL || '/assets';
 
@@ -377,6 +408,7 @@ const currentMarkdown = computed({
 const slides = computed(() => readerStore.currentSlides);
 const documentModes = computed(() => readerStore.documentModes);
 const currentViewMode = computed(() => readerStore.currentViewMode);
+const availableViewModes = ['slide', 'color', 'elegant', 'line', 'minimal', 'technical'] as const;
 
 provide('isDark', isDark);
 provide('assetBaseUrl', ASSET_BASE_URL);
@@ -395,6 +427,12 @@ const cycleViewMode = (id: string) => {
   if (id === readerStore.currentDocId) {
     currentSlideIndex.value = 0;
   }
+};
+
+const setCurrentViewMode = (mode: string) => {
+  if (!readerStore.currentDocId) return;
+  readerStore.setViewMode(readerStore.currentDocId, mode as ArticleMode);
+  currentSlideIndex.value = 0;
 };
 
 const syncCurrentDocument = async () => {

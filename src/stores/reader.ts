@@ -18,6 +18,25 @@ interface CachedDocumentContent {
   fetchedAt: number;
 }
 
+const SUPPORTED_VIEW_MODES = [
+  'slide',
+  'color',
+  'elegant',
+  'line',
+  'minimal',
+  'technical',
+] as const;
+
+type SupportedViewMode = (typeof SUPPORTED_VIEW_MODES)[number];
+
+function normalizeViewMode(mode?: ArticleMode | string): SupportedViewMode {
+  if (!mode) return 'minimal';
+  if (SUPPORTED_VIEW_MODES.includes(mode as SupportedViewMode)) return mode as SupportedViewMode;
+  if (mode === 'article') return 'minimal';
+  if (mode === 'homework') return 'line';
+  return 'minimal';
+}
+
 function formatDate(dateString?: string): string {
   if (!dateString) return '';
 
@@ -52,7 +71,7 @@ export const useReaderStore = defineStore('reader', {
     currentDocId: '',
     currentMarkdown: '',
     currentSlides: [] as SlideNode[],
-    currentViewMode: 'article' as ArticleMode,
+    currentViewMode: 'minimal' as ArticleMode,
 
     error: null as string | null,
   }),
@@ -78,9 +97,7 @@ export const useReaderStore = defineStore('reader', {
         this.docList = items.map(mapArticleToDocMeta);
 
         for (const doc of this.docList) {
-          if (!this.documentModes[doc.id]) {
-            this.documentModes[doc.id] = doc.defaultMode;
-          }
+          this.documentModes[doc.id] = normalizeViewMode(this.documentModes[doc.id] || doc.defaultMode);
         }
 
         const validIds = new Set(this.docList.map((doc) => doc.id));
@@ -114,7 +131,7 @@ export const useReaderStore = defineStore('reader', {
       if (!id) return;
 
       this.currentDocId = id;
-      this.currentViewMode = this.documentModes[id] || 'article';
+      this.currentViewMode = normalizeViewMode(this.documentModes[id]);
       this.error = null;
 
       const cached = this.documentCache[id];
@@ -131,7 +148,7 @@ export const useReaderStore = defineStore('reader', {
       if (!id) return;
 
       this.currentDocId = id;
-      this.currentViewMode = this.documentModes[id] || 'article';
+      this.currentViewMode = normalizeViewMode(this.documentModes[id]);
       this.error = null;
 
       try {
@@ -139,7 +156,7 @@ export const useReaderStore = defineStore('reader', {
         const content = data.content || '';
         const parsedSlides = content ? parseMarkdownToSlides(content) : [];
 
-        this.documentModes[id] = data.defaultMode || 'article';
+        this.documentModes[id] = normalizeViewMode(data.defaultMode);
 
         this.documentCache[id] = {
           content,
@@ -149,7 +166,7 @@ export const useReaderStore = defineStore('reader', {
 
         this.currentMarkdown = content;
         this.currentSlides = parsedSlides;
-        this.currentViewMode = this.documentModes[id];
+        this.currentViewMode = normalizeViewMode(this.documentModes[id]);
       } catch (error) {
         console.error('加载文章失败', error);
         this.error = error instanceof Error ? error.message : '加载失败';
@@ -176,13 +193,22 @@ export const useReaderStore = defineStore('reader', {
       }
     },
 
+    setViewMode(id: string, mode: ArticleMode) {
+      if (!id) return;
+      const normalizedMode = normalizeViewMode(mode);
+      this.documentModes[id] = normalizedMode;
+      if (id === this.currentDocId) {
+        this.currentViewMode = normalizedMode;
+      }
+    },
+
     cycleViewMode(id: string) {
-      const viewModes: ArticleMode[] = ['homework', 'slide', 'article'];
-      const currentMode = this.documentModes[id];
+      const viewModes = SUPPORTED_VIEW_MODES;
+      const currentMode = normalizeViewMode(this.documentModes[id]);
       if (!currentMode) return;
 
       const idx = viewModes.indexOf(currentMode);
-      const nextMode = viewModes[(idx + 1) % viewModes.length];
+      const nextMode = viewModes[(idx + 1) % viewModes.length] as ArticleMode;
 
       this.documentModes[id] = nextMode;
 

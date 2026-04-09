@@ -16,17 +16,23 @@ const isDark = inject('isDark', ref(true));
 const currentArticleId = inject<Ref<string>>('currentArticleId', ref(''));
 const assetBaseUrl = inject<string>('assetBaseUrl', '');
 
+const escapeHtml = (value: string) =>
+  value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
 // 伪代码关键字高亮与缩进格式化
 const formatPseudoLine = (line: string) => {
   const indentMatched = line.match(/^(\s+)/);
   const indent = indentMatched ? '&nbsp;'.repeat(indentMatched[1].length * 2) : '';
-  let content = line.trimStart();
+  const content = escapeHtml(line.trimStart());
 
   const keywords = ['if', 'else', 'while', 'for', 'return', 'function', 'procedure', 'end', 'do', 'then', 'break', 'continue', 'true', 'false'];
   const regex = new RegExp(`\\b(${keywords.join('|')})\\b`, 'gi');
-  content = content.replace(regex, '<strong class="font-semibold text-teal-700 dark:text-teal-400">$1</strong>');
-
-  return `${indent}${content}`;
+  return `${indent}${content.replace(regex, '<strong class="ast-pseudo-keyword">$1</strong>')}`;
 };
 
 const renderBlock = async () => {
@@ -114,123 +120,116 @@ const resolveUrl = (url: string) => {
 <template>
   <template v-if="node.type === 'text'">{{ node.value }}</template>
 
-  <span v-else-if="node.type === 'inlineMath'" class="mx-1 text-teal-700 dark:text-teal-400"
+  <span v-else-if="node.type === 'inlineMath'" class="ast-inline-math"
     v-html="katex.renderToString(node.value, { throwOnError: false })"></span>
 
   <div v-else-if="node.type === 'math'"
-    class="math-display my-6 flex justify-center py-5 px-4 w-full rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-300 dark:border-slate-700"
+    class="ast-math"
     v-html="katex.renderToString(node.value, { displayMode: true, throwOnError: false })"></div>
 
-  <strong v-else-if="node.type === 'strong'" class="font-semibold text-slate-900 dark:text-slate-100">
+  <strong v-else-if="node.type === 'strong'" class="ast-strong">
     <AstRenderer v-for="(child, idx) in node.children" :key="idx" :node="child" />
   </strong>
 
-  <em v-else-if="node.type === 'emphasis'" class="italic text-slate-700 dark:text-slate-300">
+  <em v-else-if="node.type === 'emphasis'" class="ast-emphasis">
     <AstRenderer v-for="(child, idx) in node.children" :key="idx" :node="child" />
   </em>
 
   <code v-else-if="node.type === 'inlineCode'"
-    class="bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-2 py-1 rounded text-sm font-mono mx-1 border border-slate-300 dark:border-slate-700">{{
+    class="ast-inline-code">{{
       node.value }}</code>
 
   <a v-else-if="node.type === 'link'" :href="node.url"
-    class="text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 font-medium underline underline-offset-2 transition-colors duration-150"
+    class="ast-link"
     target="_blank">
     <AstRenderer v-for="(child, idx) in node.children" :key="idx" :node="child" />
   </a>
 
   <component v-else-if="node.type === 'heading' && node.depth >= 3" :is="`h${node.depth}`" :class="[
-    'font-semibold mt-8 mb-4 pl-4 border-l-4 text-slate-800 dark:text-slate-200',
-    node.depth === 3
-      ? 'border-teal-400 dark:border-teal-600 text-xl'
-      : node.depth === 4
-        ? 'border-teal-300 dark:border-teal-700 text-lg'
-        : node.depth === 5
-          ? 'border-slate-400 dark:border-slate-600 text-base'
-          : 'border-slate-400 dark:border-slate-600 text-base'
+    'ast-heading',
+    `ast-heading-${node.depth}`
   ]">
     <AstRenderer v-for="(child, idx) in node.children" :key="idx" :node="child" />
   </component>
 
   <template v-else-if="node.type === 'paragraph'">
-    <div v-if="isPureMedia(node)" class="media-gallery w-full my-6 grid gap-6 place-items-center"
+    <div v-if="isPureMedia(node)" class="ast-media-gallery"
       :style="{ gridTemplateColumns: `repeat(${getGridCols(getMediaChildren(node).length)}, minmax(0, 1fr))` }">
       <AstRenderer v-for="(child, idx) in getMediaChildren(node)" :key="idx" :node="child" />
     </div>
-    <p v-else class="mb-6 text-slate-700 dark:text-slate-300 text-base leading-8">
+    <p v-else class="ast-paragraph">
       <AstRenderer v-for="(child, idx) in node.children" :key="idx" :node="child" />
     </p>
   </template>
 
   <video v-else-if="node.type === 'image' && isVideo(node.url)" :src="resolveUrl(node.url)" controls
-    class="max-h-[60vh] mx-auto block rounded-lg shadow-sm border border-slate-300 dark:border-slate-700"></video>
+    class="ast-media ast-video"></video>
 
   <img v-else-if="node.type === 'image' && !isVideo(node.url)" :src="resolveUrl(node.url)" :alt="node.alt"
-    class="max-h-[60vh] w-auto max-w-full object-contain mx-auto block rounded-lg shadow-sm border border-slate-300 dark:border-slate-700" />
+    class="ast-media ast-image" />
 
   <blockquote v-else-if="node.type === 'blockquote'"
-    class="border-l-4 border-teal-400 pl-4 py-2 my-6 text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/30 rounded-r-lg text-base leading-7 font-normal">
+    class="ast-blockquote">
     <AstRenderer v-for="(child, idx) in node.children" :key="idx" :node="child" />
   </blockquote>
 
   <div v-else-if="node.type === 'table'"
-    class="w-full overflow-x-auto my-8 rounded-lg shadow-sm border border-slate-300 dark:border-slate-700">
-    <table class="w-full text-left text-sm border-collapse bg-white dark:bg-slate-900">
+    class="ast-table-wrapper">
+    <table class="ast-table">
       <AstRenderer v-for="(child, idx) in node.children" :key="idx" :node="child" />
     </table>
   </div>
 
-  <tr v-else-if="node.type === 'tableRow'" class="border-b border-slate-200 dark:border-slate-700 last:border-b-0">
+  <tr v-else-if="node.type === 'tableRow'" class="ast-table-row">
     <AstRenderer v-for="(child, idx) in node.children" :key="idx" :node="child" />
   </tr>
 
-  <td v-else-if="node.type === 'tableCell'" class="px-4 py-3 text-slate-700 dark:text-slate-300 font-normal">
+  <td v-else-if="node.type === 'tableCell'" class="ast-table-cell">
     <AstRenderer v-for="(child, idx) in node.children" :key="idx" :node="child" />
   </td>
 
   <component :is="node.ordered ? 'ol' : 'ul'" v-else-if="node.type === 'list'" :class="[
-    'mb-6 pl-6 text-slate-700 dark:text-slate-300 text-base space-y-2 leading-7',
-    node.ordered ? 'list-decimal' : 'list-disc'
+    'ast-list',
+    node.ordered ? 'ast-list-ordered' : 'ast-list-unordered'
   ]">
     <AstRenderer v-for="(child, idx) in node.children" :key="idx" :node="child" />
   </component>
 
   <li v-else-if="node.type === 'listItem'"
-    class="pl-1 marker:text-teal-600 dark:marker:text-teal-400 marker:font-semibold">
+    class="ast-list-item">
     <AstRenderer v-for="(child, idx) in node.children" :key="idx" :node="child" />
   </li>
 
-  <div v-else-if="node.type === 'code'" class="w-full">
+  <div v-else-if="node.type === 'code'" class="ast-code-block">
 
-    <div v-if="node.lang === 'mermaid'" class="flex justify-center my-8" v-html="highlightedCode"></div>
+    <div v-if="node.lang === 'mermaid'" class="ast-mermaid" v-html="highlightedCode"></div>
 
     <div v-else-if="node.lang === 'pseudo' || node.lang === 'algorithm'"
-      class="my-8 rounded-lg overflow-hidden border border-teal-300 dark:border-teal-700 bg-slate-50 dark:bg-slate-800/30 shadow-sm">
+      class="ast-pseudo">
       <div
-        class="border-b border-teal-300 dark:border-teal-700 bg-slate-100 dark:bg-slate-800/60 px-5 py-3 flex items-baseline gap-3 font-semibold text-sm text-teal-900 dark:text-teal-300 uppercase tracking-wide">
+        class="ast-pseudo-header">
         <span>Algorithm</span>
-        <span class="italic font-normal text-teal-700 dark:text-teal-400">{{ pseudoTitle }}</span>
+        <span class="ast-pseudo-title">{{ pseudoTitle }}</span>
       </div>
-      <ol
-        class="list-decimal list-outside pl-8 pr-5 py-4 space-y-1 text-sm leading-7 marker:font-semibold marker:text-teal-600 dark:marker:text-teal-400 text-slate-700 dark:text-slate-300 font-mono">
-        <li v-for="(line, idx) in pseudoLines" :key="idx" class="pl-2">
-          <span class="whitespace-pre text-xs leading-6" v-html="formatPseudoLine(line)"></span>
+      <ol class="ast-pseudo-lines">
+        <li v-for="(line, idx) in pseudoLines" :key="idx" class="ast-pseudo-line">
+          <span v-html="formatPseudoLine(line)"></span>
         </li>
       </ol>
     </div>
 
     <div v-else
-      class="my-6 rounded-lg border border-slate-300 dark:border-slate-700 overflow-hidden shadow-sm bg-white dark:bg-slate-900">
+      class="ast-code-frame">
       <!-- 代码块头部 -->
       <div
-        class="flex items-center justify-between bg-slate-100 dark:bg-slate-800 px-5 py-2 border-b border-slate-300 dark:border-slate-700">
+        class="ast-code-meta">
         <span v-if="node.lang"
-          class="text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">{{ node.lang
+          class="ast-code-lang">{{ node.lang
           }}</span>
       </div>
       <!-- 代码块内容 -->
       <div
-        class="shiki-container text-sm font-mono leading-7 p-4 [&>pre]:overflow-x-auto [&>pre]:bg-transparent [&>pre]:p-0 text-slate-800 dark:text-slate-200"
+        class="ast-code-content"
         v-html="highlightedCode"></div>
     </div>
 
@@ -292,5 +291,213 @@ table tr:first-child {
     overflow-wrap: break-word;
     display: inline-block;
   }
+}
+.ast-inline-math {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.ast-math {
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.ast-strong {
+  font-weight: 600;
+}
+
+.ast-emphasis {
+  font-style: italic;
+}
+
+.ast-inline-code {
+  display: inline-block;
+  margin: 0 0.15rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 0.375rem;
+  background: rgba(15, 23, 42, 0.06);
+  font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
+  font-size: 0.92em;
+}
+
+.ast-link {
+  text-decoration: underline;
+  text-underline-offset: 0.16em;
+}
+
+.ast-heading {
+  margin: 1.75rem 0 0.85rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.ast-heading-3 {
+  font-size: 1.4rem;
+}
+
+.ast-heading-4 {
+  font-size: 1.18rem;
+}
+
+.ast-heading-5,
+.ast-heading-6 {
+  font-size: 1rem;
+}
+
+.ast-paragraph {
+  margin-bottom: 1rem;
+}
+
+.ast-media-gallery {
+  display: grid;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  align-items: center;
+}
+
+.ast-media {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  max-height: 60vh;
+  margin: 0 auto;
+  object-fit: contain;
+}
+
+.ast-media-gallery > .ast-media {
+  height: 100%;
+  max-height: 40vh;
+  object-fit: cover;
+  aspect-ratio: 16 / 9;
+}
+
+.ast-media-gallery:has(> :only-child) > .ast-media {
+  max-height: 70vh;
+  object-fit: contain;
+  aspect-ratio: auto;
+}
+
+.ast-blockquote {
+  margin: 1.5rem 0;
+  padding-left: 1rem;
+  border-left: 2px solid #d4d4d8;
+}
+
+.ast-table-wrapper {
+  width: 100%;
+  margin: 1.75rem 0;
+  overflow-x: auto;
+}
+
+.ast-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ast-table-row {
+  border-bottom: 1px solid #e4e4e7;
+}
+
+.ast-table-row:first-child {
+  background: transparent;
+}
+
+.ast-table-cell {
+  padding: 0.8rem 1rem;
+  vertical-align: top;
+}
+
+.ast-list {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+
+.ast-list-ordered {
+  list-style: decimal;
+}
+
+.ast-list-unordered {
+  list-style: disc;
+}
+
+.ast-list-item {
+  margin: 0.35rem 0;
+}
+
+.ast-list-item > :deep(p) {
+  margin-bottom: 0;
+}
+
+.ast-code-block {
+  width: 100%;
+  margin: 1.5rem 0;
+}
+
+.ast-code-frame,
+.ast-pseudo {
+  overflow: hidden;
+  border: 1px solid #e4e4e7;
+  border-radius: 0.9rem;
+}
+
+.ast-code-meta,
+.ast-pseudo-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid #e4e4e7;
+  background: rgba(15, 23, 42, 0.035);
+  font-size: 0.78rem;
+}
+
+.ast-code-lang,
+.ast-pseudo-header {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ast-pseudo-title {
+  font-style: italic;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.ast-pseudo-lines {
+  margin: 0;
+  padding: 1rem 1rem 1rem 2.8rem;
+  font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
+}
+
+.ast-pseudo-line {
+  padding-left: 0.4rem;
+  white-space: pre-wrap;
+}
+
+.ast-pseudo-keyword {
+  font-weight: 600;
+}
+
+.ast-code-content {
+  padding: 0;
+}
+
+.ast-code-content :deep(pre),
+.ast-code-fallback {
+  margin: 0;
+  padding: 1rem 1.1rem;
+  overflow-x: auto;
+  font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
+
+.ast-code-content :deep(pre) {
+  background: transparent !important;
+}
+
+.ast-mermaid {
+  overflow-x: auto;
 }
 </style>

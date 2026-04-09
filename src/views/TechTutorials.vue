@@ -23,7 +23,7 @@
           class="flex items-center justify-between p-5 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200 group">
           <div class="flex items-center gap-4 min-w-0">
             <div class="flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-lg bg-gray-50 dark:bg-gray-800">
-              <svg v-if="tut.defaultMode === 'article'" class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor"
+              <svg v-if="tut.defaultMode === 'technical'" class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor"
                 viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -35,7 +35,7 @@
                   d="M4 5h16v10H4V5zm2 12h12m-8 3h4" />
               </svg>
 
-              <svg v-else-if="tut.defaultMode === 'homework'" class="w-4 h-4 text-gray-500" fill="none"
+              <svg v-else-if="tut.defaultMode === 'line'" class="w-4 h-4 text-gray-500" fill="none"
                 stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M9 5h6m-7 4h8m-9 4h10m-8 4h6M7 3h10a2 2 0 012 2v14a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2z" />

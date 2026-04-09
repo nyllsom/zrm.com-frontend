@@ -2,7 +2,15 @@ import axios from 'axios';
 import { getToken } from '@/api/auth';
 
 export type ArticleCategory = 'activity' | 'tutorial';
-export type ArticleMode = 'article' | 'slide' | 'homework';
+export type ArticleMode =
+  | 'slide'
+  | 'color'
+  | 'elegant'
+  | 'line'
+  | 'minimal'
+  | 'technical'
+  | 'article'
+  | 'homework';
 
 export interface Article {
   id: string;

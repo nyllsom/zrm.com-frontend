@@ -74,14 +74,14 @@ const splitGridClass = computed(() => {
         <h1 class="text-6xl md:text-7xl leading-tight font-light tracking-tight text-slate-900 dark:text-slate-50">
           {{ slide.title }}
         </h1>
-        <div class="max-w-3xl mx-auto text-slate-700 dark:text-slate-300 text-lg leading-8">
+        <div class="slide-prose max-w-3xl mx-auto text-slate-700 dark:text-slate-300 text-lg leading-8">
           <AstRenderer v-for="(el, idx) in slideAnalysis.els" :key="idx" :node="el" />
         </div>
       </div>
 
       <div v-else-if="layoutMode === 'split'" :class="['h-full grid gap-8 pb-4', splitGridClass]">
         <div class="flex flex-col justify-center max-h-full overflow-y-auto pr-6 scrollbar-hide min-w-0 pb-8 border-r-2 border-teal-200 dark:border-teal-800/40">
-          <div class="text-slate-700 dark:text-slate-300 text-base leading-8 space-y-6">
+          <div class="slide-prose text-slate-700 dark:text-slate-300 text-base leading-8 space-y-6">
             <AstRenderer v-for="(el, idx) in slideAnalysis.textNodes" :key="'t'+idx" :node="el" />
           </div>
         </div>
@@ -96,7 +96,7 @@ const splitGridClass = computed(() => {
         </div>
       </div>
 
-      <div v-else class="h-full flex flex-col justify-center pb-4 max-h-full overflow-y-auto scrollbar-hide pr-4 max-w-5xl mx-auto w-full text-slate-700 dark:text-slate-300 text-base leading-8">
+      <div v-else class="slide-prose h-full flex flex-col justify-center pb-4 max-h-full overflow-y-auto scrollbar-hide pr-4 max-w-5xl mx-auto w-full text-slate-700 dark:text-slate-300 text-base leading-8">
         <AstRenderer v-for="(el, idx) in slideAnalysis.textNodes" :key="idx" :node="el" />
       </div>
 
@@ -107,4 +107,39 @@ const splitGridClass = computed(() => {
 <style scoped>
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+.slide-prose :deep(.ast-paragraph) {
+  margin-bottom: 1.25rem;
+}
+
+.slide-prose :deep(.ast-heading) {
+  color: rgb(15 23 42);
+}
+
+:global(.dark) .slide-prose :deep(.ast-heading) {
+  color: rgb(248 250 252);
+}
+
+.slide-prose :deep(.ast-inline-code) {
+  background: rgba(20, 184, 166, 0.08);
+}
+
+.slide-prose :deep(.ast-link) {
+  color: rgb(13 148 136);
+}
+
+.slide-prose :deep(.ast-blockquote) {
+  border-left-color: rgb(45 212 191);
+  padding-left: 1.1rem;
+}
+
+.slide-prose :deep(.ast-code-frame),
+.slide-prose :deep(.ast-pseudo) {
+  background: rgba(255, 255, 255, 0.72);
+}
+
+:global(.dark) .slide-prose :deep(.ast-code-frame),
+:global(.dark) .slide-prose :deep(.ast-pseudo) {
+  background: rgba(15, 23, 42, 0.5);
+}
 </style>

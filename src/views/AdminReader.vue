@@ -174,9 +174,12 @@
                 <label class="block text-[11px] font-medium text-gray-400 dark:text-gray-500 mb-1">展示模式</label>
                 <select v-model="form.defaultMode"
                   class="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-gray-800 dark:text-gray-200 outline-none focus:border-[#40B3FF] transition-colors">
-                  <option value="article">article</option>
                   <option value="slide">slide</option>
-                  <option value="homework">homework</option>
+                  <option value="color">color</option>
+                  <option value="elegant">elegant</option>
+                  <option value="line">line</option>
+                  <option value="minimal">minimal</option>
+                  <option value="technical">technical</option>
                 </select>
               </div>
             </div>
@@ -281,37 +284,27 @@
             <code class="text-[10px] font-mono text-gray-400 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded px-1.5 py-0.5">{{ form.defaultMode }}</code>
           </div>
 
-          <div class="flex items-center gap-1">
-            <button @click="previewMode = 'article'"
-              class="px-2.5 py-1 text-xs rounded-lg border transition-colors"
-              :class="previewMode === 'article'
-                ? 'border-[#40B3FF] text-[#40B3FF] bg-blue-50 dark:bg-blue-950/40'
-                : 'border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:border-gray-300'">
-              Article
-            </button>
-            <button @click="previewMode = 'slide'"
-              class="px-2.5 py-1 text-xs rounded-lg border transition-colors"
-              :class="previewMode === 'slide'
-                ? 'border-[#40B3FF] text-[#40B3FF] bg-blue-50 dark:bg-blue-950/40'
-                : 'border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:border-gray-300'">
-              Slide
-            </button>
-            <button @click="previewMode = 'homework'"
-              class="px-2.5 py-1 text-xs rounded-lg border transition-colors"
-              :class="previewMode === 'homework'
-                ? 'border-[#40B3FF] text-[#40B3FF] bg-blue-50 dark:bg-blue-950/40'
-                : 'border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:border-gray-300'">
-              Homework
-            </button>
+          <div class="flex items-center gap-2">
+            <label for="admin-preview-style" class="text-xs text-gray-500 dark:text-gray-400">风格</label>
+            <select
+              id="admin-preview-style"
+              v-model="previewMode"
+              class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-2.5 py-1 text-xs text-gray-700 dark:text-gray-200 outline-none focus:border-[#40B3FF]"
+            >
+              <option v-for="mode in availableViewModes" :key="mode" :value="mode">{{ mode }}</option>
+            </select>
           </div>
         </div>
 
         <!-- Preview Body -->
         <div class="flex-1 overflow-y-auto custom-scrollbar">
           <transition name="fade-view" mode="out-in">
-            <HomeworkView v-if="previewMode === 'homework'" :slides="parsedSlides" />
-            <SlideView v-else-if="previewMode === 'slide' && parsedSlides.length > 0" :slide="parsedSlides[currentSlideIndex]" />
-            <ArticleView v-else-if="previewMode === 'article'" :slides="parsedSlides" />
+            <SlideView v-if="previewMode === 'slide' && parsedSlides.length > 0" :slide="parsedSlides[currentSlideIndex]" />
+            <ColorView v-else-if="previewMode === 'color'" :slides="parsedSlides" />
+            <ElegantView v-else-if="previewMode === 'elegant'" :slides="parsedSlides" />
+            <LineView v-else-if="previewMode === 'line'" :slides="parsedSlides" />
+            <MinimalView v-else-if="previewMode === 'minimal'" :slides="parsedSlides" />
+            <TechnicalView v-else-if="previewMode === 'technical'" :slides="parsedSlides" />
             <div v-else class="h-full flex items-center justify-center text-sm text-gray-400">暂无可显示内容</div>
           </transition>
         </div>
@@ -393,15 +386,18 @@
 
 <script setup lang="ts">
 
-import { ref, computed, onMounted, onUnmounted, provide, type ComputedRef, reactive } from 'vue';
+import { ref, computed, onMounted, onUnmounted, provide, type ComputedRef, reactive, watch } from 'vue';
 import { useTheme } from '@/composables/useTheme';
 import { articlesApi, type Article, type ArticleMode, type CreateArticleRequest } from '@/api/articles';
 import { assetsApi, type AssetRecord } from '@/api/assets';
 import { parseMarkdownToSlides, type SlideNode } from '@/core/parser';
 
-import HomeworkView from '@/components/HomeworkView.vue';
 import SlideView from '@/components/SlideView.vue';
-import ArticleView from '@/components/ArticleView.vue';
+import ColorView from '@/components/ColorView.vue';
+import ElegantView from '@/components/ElegantView.vue';
+import LineView from '@/components/LineView.vue';
+import MinimalView from '@/components/MinimalView.vue';
+import TechnicalView from '@/components/TechnicalView.vue';
 
 type ArticleCategory = 'activity' | 'tutorial';
 
@@ -425,6 +421,16 @@ interface AdminFormState {
   defaultMode: ArticleMode;
 }
 
+const availableViewModes = ['slide', 'color', 'elegant', 'line', 'minimal', 'technical'] as const;
+
+function normalizeViewMode(mode?: ArticleMode | string): ArticleMode {
+  if (!mode) return 'minimal';
+  if (availableViewModes.includes(mode as (typeof availableViewModes)[number])) return mode as ArticleMode;
+  if (mode === 'article') return 'minimal';
+  if (mode === 'homework') return 'line';
+  return 'minimal';
+}
+
 const { isDark, toggleTheme } = useTheme();
 
 const showSidebar = ref(true);
@@ -439,7 +445,7 @@ const selectedId = ref('');
 const isCreating = ref(false);
 
 const articles = ref<ArticleListItem[]>([]);
-const previewMode = ref<ArticleMode>('article');
+const previewMode = ref<ArticleMode>('minimal');
 
 const form = ref<AdminFormState>({
   id: '',
@@ -448,7 +454,7 @@ const form = ref<AdminFormState>({
   category: 'activity',
   content: '',
   cover: '',
-  defaultMode: 'article',
+  defaultMode: 'minimal',
 });
 
 const ASSET_BASE_URL = import.meta.env.VITE_ASSET_BASE_URL || '/assets';
@@ -594,7 +600,7 @@ function mapArticleToListItem(article: Article): ArticleListItem {
     author: article.author,
     category: article.category,
     date: formatDate(article.createdAt || article.updatedAt),
-    defaultMode: article.defaultMode,
+    defaultMode: normalizeViewMode(article.defaultMode),
     cover: article.cover,
   };
 }
@@ -607,7 +613,7 @@ function applyArticleToForm(article: Article) {
     category: (article.category as ArticleCategory) || 'activity',
     content: article.content || '',
     cover: article.cover || '',
-    defaultMode: article.defaultMode || 'article',
+    defaultMode: normalizeViewMode(article.defaultMode),
   };
   previewMode.value = form.value.defaultMode;
 }
@@ -624,9 +630,9 @@ function resetForm() {
       category: 'activity',
       content: '',
       cover: '',
-      defaultMode: 'article',
+      defaultMode: 'minimal',
     };
-    previewMode.value = 'article';
+    previewMode.value = 'minimal';
     currentSlideIndex.value = 0;
     articleAssets.value = [];
     clearAssetMessage();
@@ -652,10 +658,10 @@ function createNewArticle() {
     category: 'activity',
     content: '',
     cover: '',
-    defaultMode: 'article',
+    defaultMode: 'minimal',
   };
 
-  previewMode.value = 'article';
+  previewMode.value = 'minimal';
   articleAssets.value = [];
   assetSelectedFile.value = null;
   assetName.value = '';
@@ -808,10 +814,10 @@ async function deleteCurrentArticle() {
       category: 'activity',
       content: '',
       cover: '',
-      defaultMode: 'article',
+      defaultMode: 'minimal',
     };
 
-    previewMode.value = 'article';
+    previewMode.value = 'minimal';
     currentSlideIndex.value = 0;
 
     await fetchArticles();
@@ -862,6 +868,13 @@ const handleKeydown = (e: KeyboardEvent) => {
     saveArticle();
   }
 };
+
+watch(
+  () => form.value.defaultMode,
+  (mode) => {
+    previewMode.value = normalizeViewMode(mode);
+  }
+);
 
 const collapsedGroups = reactive<Record<string, boolean>>({})
 const toggleGroup = (groupName: string) => {
