@@ -4,6 +4,7 @@ import { getToken } from '@/api/auth';
 export type ArticleCategory = 'activity' | 'tutorial';
 export type ArticleMode =
   | 'slide'
+  | 'activity'
   | 'color'
   | 'elegant'
   | 'line'

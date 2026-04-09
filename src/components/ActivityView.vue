@@ -39,7 +39,7 @@ const contentSlides = props.slides.filter(s => s.type === 'content');
         
         <div class="relative z-10">
           <div class="inline-block px-4 py-1 mb-6 text-sm font-medium tracking-widest uppercase bg-white/10 backdrop-blur rounded-full border border-white/20">
-            {{ courseName || '课程作业' }}
+            {{ courseName || 'Feature Article' }}
           </div>
           
           <h1 class="text-5xl md:text-6xl font-bold mb-8 leading-tight bg-gradient-to-r from-white via-slate-100 to-slate-200 bg-clip-text text-transparent">
@@ -51,7 +51,7 @@ const contentSlides = props.slides.filter(s => s.type === 'content');
               <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-sm font-bold">
                 {{ (studentName || 'S')[0] }}
               </div>
-              <span>{{ studentName || '学生姓名' }}</span>
+              <span>{{ studentName || 'Author' }}</span>
             </div>
             <span class="text-slate-500">•</span>
             <span>{{ displayDate }}</span>
@@ -68,17 +68,17 @@ const contentSlides = props.slides.filter(s => s.type === 'content');
         <template v-for="(slide, index) in contentSlides" :key="index">
           <section class="content-block group">
             
-            <!-- 问题部分 -->
+            <!-- 章节内容 -->
             <div v-if="!slide.isContinuation" class="question-section mb-10 animate-fade-in">
               <div class="flex items-start gap-4 mb-6">
-                <!-- 问题编号 -->
+                <!-- 章节编号 -->
                 <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-purple-500/30">
                   {{ index + 1 }}
                 </div>
                 
                 <div class="flex-1">
                   <div class="inline-flex items-center gap-2 mb-2">
-                    <span class="text-xs font-bold tracking-widest uppercase text-purple-600 dark:text-purple-400">问题</span>
+                    <span class="text-xs font-bold tracking-widest uppercase text-purple-600 dark:text-purple-400">Section</span>
                     <div class="h-px flex-1 bg-gradient-to-r from-purple-200 to-transparent dark:from-purple-800 w-16"></div>
                   </div>
                   <h2 class="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-4">
@@ -95,7 +95,7 @@ const contentSlides = props.slides.filter(s => s.type === 'content');
               </div>
             </div>
 
-            <!-- 解答部分 -->
+            <!-- 续写内容 -->
             <div v-else class="solution-section ml-16 animate-fade-in-delay">
               <div class="flex items-center gap-3 mb-6">
                 <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/30">
@@ -103,7 +103,7 @@ const contentSlides = props.slides.filter(s => s.type === 'content');
                     <polyline points="20 6 9 17 4 12"></polyline>
                   </svg>
                 </div>
-                <span class="text-sm font-bold tracking-widest uppercase text-blue-600 dark:text-blue-400">解答</span>
+                <span class="text-sm font-bold tracking-widest uppercase text-blue-600 dark:text-blue-400">Continuation</span>
                 <div class="h-px flex-1 bg-gradient-to-r from-blue-200 to-transparent dark:from-blue-800"></div>
               </div>
               

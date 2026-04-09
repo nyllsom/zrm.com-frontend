@@ -85,7 +85,7 @@ const contentSlides = props.slides.filter(s => s.type === 'content');
           <template v-for="(slide, index) in contentSlides" :key="index">
             <section class="content-section relative">
               
-              <!-- 问题部分 -->
+              <!-- 章节内容 -->
               <div v-if="!slide.isContinuation" class="question-wrapper">
                 
                 <!-- 标题框 -->
@@ -104,7 +104,7 @@ const contentSlides = props.slides.filter(s => s.type === 'content');
                   </div>
                 </div>
 
-                <!-- 问题内容框 -->
+                <!-- 章节内容框 -->
                 <div class="question-box relative ml-16 p-6 border-2 border-stone-900 dark:border-stone-100">
                   <!-- 左上角装饰 -->
                   <div class="absolute -top-2 -left-2 w-4 h-4 bg-white dark:bg-stone-900 border-t-2 border-l-2 border-stone-900 dark:border-stone-100"></div>
@@ -117,19 +117,19 @@ const contentSlides = props.slides.filter(s => s.type === 'content');
                 </div>
               </div>
 
-              <!-- 解答部分 -->
+              <!-- 续写内容 -->
               <div v-else class="solution-wrapper ml-16 mt-10">
                 
-                <!-- 解答标签 -->
+                <!-- 续写标签 -->
                 <div class="solution-label flex items-center gap-3 mb-6">
                   <div class="w-8 h-8 border-2 border-stone-600 dark:border-stone-400 flex items-center justify-center">
                     <div class="w-4 h-px bg-stone-600 dark:bg-stone-400"></div>
                   </div>
-                  <span class="text-xs uppercase tracking-widest text-stone-600 dark:text-stone-400 font-medium">解答</span>
+                  <span class="text-xs uppercase tracking-widest text-stone-600 dark:text-stone-400 font-medium">Continuation</span>
                   <div class="flex-1 h-px bg-stone-300 dark:bg-stone-700"></div>
                 </div>
 
-                <!-- 解答内容 -->
+                <!-- 续写正文 -->
                 <div class="solution-content pl-11 border-l border-stone-300 dark:border-stone-700">
                   <div class="prose-line">
                     <AstRenderer v-for="(el, idx) in slide.elements" :key="'a'+idx" :node="el" />

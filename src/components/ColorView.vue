@@ -18,7 +18,7 @@ const displayDate = props.date || new Date().toLocaleDateString('zh-CN', {
 // 内容幻灯片
 const contentSlides = props.slides.filter(s => s.type === 'content');
 
-// 为每个问题分配颜色
+// 为每个章节分配颜色
 const colorSchemes = [
   { bg: 'bg-rose-50 dark:bg-rose-950/20', border: 'border-rose-400', accent: 'bg-rose-400', text: 'text-rose-700 dark:text-rose-400' },
   { bg: 'bg-amber-50 dark:bg-amber-950/20', border: 'border-amber-400', accent: 'bg-amber-400', text: 'text-amber-700 dark:text-amber-400' },
@@ -95,7 +95,7 @@ const getColorScheme = (index: number) => {
         <template v-for="(slide, index) in contentSlides" :key="index">
           <section class="content-card">
             
-            <!-- 问题卡片 -->
+            <!-- 章节卡片 -->
             <div v-if="!slide.isContinuation" :class="getColorScheme(index).bg" class="rounded-3xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
               
               <!-- 标题区 -->
@@ -108,7 +108,7 @@ const getColorScheme = (index: number) => {
                 </div>
                 <div class="flex-1">
                   <div class="flex items-center gap-2 mb-2">
-                    <span :class="getColorScheme(index).text" class="text-xs font-bold uppercase tracking-wider">问题</span>
+                    <span :class="getColorScheme(index).text" class="text-xs font-bold uppercase tracking-wider">Section</span>
                     <div :class="getColorScheme(index).accent" class="w-12 h-0.5 rounded-full"></div>
                   </div>
                   <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100">
@@ -117,13 +117,13 @@ const getColorScheme = (index: number) => {
                 </div>
               </div>
 
-              <!-- 问题内容 -->
+              <!-- 章节内容 -->
               <div class="pl-18 prose-color">
                 <AstRenderer v-for="(el, idx) in slide.elements" :key="'q'+idx" :node="el" />
               </div>
             </div>
 
-            <!-- 解答卡片 -->
+            <!-- 续写卡片 -->
             <div v-else class="bg-white dark:bg-slate-900 rounded-3xl p-8 ml-0 sm:ml-10 mt-6 shadow-lg border-l-4" :class="getColorScheme(Math.floor(index / 2)).border">
               
               <div class="flex items-center gap-3 mb-6">
@@ -132,7 +132,7 @@ const getColorScheme = (index: number) => {
                   <div :class="getColorScheme(Math.floor(index / 2)).accent" class="w-1.5 h-6 rounded-full opacity-60"></div>
                   <div :class="getColorScheme(Math.floor(index / 2)).accent" class="w-1.5 h-6 rounded-full opacity-30"></div>
                 </div>
-                <span :class="getColorScheme(Math.floor(index / 2)).text" class="text-sm font-bold uppercase tracking-wider">解答</span>
+                <span :class="getColorScheme(Math.floor(index / 2)).text" class="text-sm font-bold uppercase tracking-wider">Continuation</span>
               </div>
 
               <div class="prose-color">

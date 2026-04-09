@@ -101,6 +101,9 @@
                     <svg v-else-if="documentModes[doc.id] === 'technical'" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                     </svg>
+                    <svg v-else-if="documentModes[doc.id] === 'activity'" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9h8M8 13h5M5 4h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5a1 1 0 011-1z"/>
+                    </svg>
                     <svg v-else-if="documentModes[doc.id] === 'minimal'" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                     </svg>
@@ -312,6 +315,10 @@
               v-if="currentViewMode === 'slide' && slides.length > 0"
               :slide="slides[currentSlideIndex]"
             />
+            <ActivityView
+              v-else-if="currentViewMode === 'activity'"
+              :slides="slides"
+            />
             <ColorView
               v-else-if="currentViewMode === 'color'"
               :slides="slides"
@@ -377,6 +384,7 @@ import { useReaderStore } from '@/stores/reader';
 import type { ArticleMode } from '@/api/articles';
 
 import SlideView from '@/components/SlideView.vue';
+import ActivityView from '@/components/ActivityView.vue';
 import ColorView from '@/components/ColorView.vue';
 import ElegantView from '@/components/ElegantView.vue';
 import LineView from '@/components/LineView.vue';
@@ -408,7 +416,7 @@ const currentMarkdown = computed({
 const slides = computed(() => readerStore.currentSlides);
 const documentModes = computed(() => readerStore.documentModes);
 const currentViewMode = computed(() => readerStore.currentViewMode);
-const availableViewModes = ['slide', 'color', 'elegant', 'line', 'minimal', 'technical'] as const;
+const availableViewModes = ['slide', 'activity', 'color', 'elegant', 'line', 'minimal', 'technical'] as const;
 
 provide('isDark', isDark);
 provide('assetBaseUrl', ASSET_BASE_URL);

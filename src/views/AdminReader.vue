@@ -175,6 +175,7 @@
                 <select v-model="form.defaultMode"
                   class="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-gray-800 dark:text-gray-200 outline-none focus:border-[#40B3FF] transition-colors">
                   <option value="slide">slide</option>
+                  <option value="activity">activity</option>
                   <option value="color">color</option>
                   <option value="elegant">elegant</option>
                   <option value="line">line</option>
@@ -300,6 +301,7 @@
         <div class="flex-1 overflow-y-auto custom-scrollbar">
           <transition name="fade-view" mode="out-in">
             <SlideView v-if="previewMode === 'slide' && parsedSlides.length > 0" :slide="parsedSlides[currentSlideIndex]" />
+            <ActivityView v-else-if="previewMode === 'activity'" :slides="parsedSlides" />
             <ColorView v-else-if="previewMode === 'color'" :slides="parsedSlides" />
             <ElegantView v-else-if="previewMode === 'elegant'" :slides="parsedSlides" />
             <LineView v-else-if="previewMode === 'line'" :slides="parsedSlides" />
@@ -393,6 +395,7 @@ import { assetsApi, type AssetRecord } from '@/api/assets';
 import { parseMarkdownToSlides, type SlideNode } from '@/core/parser';
 
 import SlideView from '@/components/SlideView.vue';
+import ActivityView from '@/components/ActivityView.vue';
 import ColorView from '@/components/ColorView.vue';
 import ElegantView from '@/components/ElegantView.vue';
 import LineView from '@/components/LineView.vue';
@@ -421,7 +424,7 @@ interface AdminFormState {
   defaultMode: ArticleMode;
 }
 
-const availableViewModes = ['slide', 'color', 'elegant', 'line', 'minimal', 'technical'] as const;
+const availableViewModes = ['slide', 'activity', 'color', 'elegant', 'line', 'minimal', 'technical'] as const;
 
 function normalizeViewMode(mode?: ArticleMode | string): ArticleMode {
   if (!mode) return 'minimal';

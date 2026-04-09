@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { computed } from 'vue';
 import type { SlideNode } from '../core/parser';
 import AstRenderer from './AstRenderer.vue';
 
@@ -10,29 +10,11 @@ const props = defineProps<{
   difficulty?: 'beginner' | 'intermediate' | 'advanced';
 }>();
 
-const activeSection = ref<string>('');
-const showToc = ref(true);
-
-// 生成目录
-const tableOfContents = computed(() => {
-  return props.slides
-    .map((slide, index) => ({
-      id: `section-${index}`,
-      title: slide.title,
-      type: slide.type,
-      isContinuation: slide.isContinuation,
-    }))
-    .filter(item => item.type !== 'cover' && !item.isContinuation);
-});
-
-// 滚动到指定章节
-const scrollToSection = (id: string) => {
-  const element = document.getElementById(id);
-  if (element) {
-    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    activeSection.value = id;
-  }
-};
+const contentSlides = computed(() =>
+  props.slides
+    .map((slide, index) => ({ ...slide, sectionId: `section-${index}` }))
+    .filter((slide) => slide.type === 'content')
+);
 
 // 难度标签颜色
 const difficultyConfig = computed(() => {
@@ -44,57 +26,11 @@ const difficultyConfig = computed(() => {
   return configs[props.difficulty || 'beginner'];
 });
 
-onMounted(() => {
-  if (tableOfContents.value.length > 0) {
-    activeSection.value = tableOfContents.value[0].id;
-  }
-});
 </script>
 
 <template>
-  <div class="tech-doc-container flex min-h-screen bg-slate-50 dark:bg-slate-950">
-    
-    <!-- 侧边栏目录 -->
-    <aside 
-      class="toc-sidebar hidden lg:block w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 sticky top-0 h-screen overflow-y-auto"
-      :class="{ 'lg:hidden': !showToc }"
-    >
-      <div class="p-6 border-b border-slate-200 dark:border-slate-800">
-        <h3 class="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4">目录</h3>
-        <nav class="space-y-1">
-          <button
-            v-for="item in tableOfContents"
-            :key="item.id"
-            @click="scrollToSection(item.id)"
-            class="w-full text-left px-3 py-2 rounded-lg text-sm transition-all duration-200 group"
-            :class="activeSection === item.id 
-              ? 'bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400 font-medium' 
-              : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200'"
-          >
-            <div class="flex items-center gap-2">
-              <div 
-                class="w-1 h-4 rounded-full transition-all"
-                :class="activeSection === item.id ? 'bg-blue-500' : 'bg-slate-300 dark:bg-slate-700 group-hover:bg-slate-400'"
-              ></div>
-              <span class="line-clamp-2 leading-tight">{{ item.title }}</span>
-            </div>
-          </button>
-        </nav>
-      </div>
-      
-      <!-- 底部信息 -->
-      <div class="p-6 text-xs text-slate-500 dark:text-slate-500 space-y-2">
-        <div class="flex items-center gap-2">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-          <span>技术文档视图</span>
-        </div>
-      </div>
-    </aside>
-
-    <!-- 主内容区 -->
-    <main class="flex-1 overflow-y-auto">
+  <div class="tech-doc-container min-h-screen bg-slate-50 dark:bg-slate-950">
+    <main class="overflow-y-auto">
       <div class="max-w-4xl mx-auto px-6 py-12 lg:px-12">
         
         <!-- 文档头部 -->
@@ -135,10 +71,9 @@ onMounted(() => {
 
         <!-- 内容章节 -->
         <div class="space-y-16">
-          <template v-for="(slide, index) in slides" :key="index">
+          <template v-for="(slide, index) in contentSlides" :key="slide.sectionId">
             <section 
-              v-if="slide.type === 'content'"
-              :id="`section-${index}`"
+              :id="slide.sectionId"
               class="content-section scroll-mt-8"
             >
               
@@ -146,7 +81,7 @@ onMounted(() => {
               <div v-if="!slide.isContinuation" class="section-header mb-8">
                 <div class="flex items-center gap-4 mb-4">
                   <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-slate-700 to-slate-900 dark:from-slate-600 dark:to-slate-800 text-white font-mono text-sm font-bold shadow-lg">
-                    {{ tableOfContents.findIndex(t => t.id === `section-${index}`) + 1 }}
+                    {{ index + 1 }}
                   </div>
                   <h2 class="text-3xl font-bold text-slate-900 dark:text-slate-100 flex-1">
                     {{ slide.title }}
@@ -186,7 +121,6 @@ onMounted(() => {
 
       </div>
     </main>
-
   </div>
 </template>
 
@@ -338,45 +272,8 @@ onMounted(() => {
   background: rgba(59, 130, 246, 0.05);
 }
 
-/* 滚动条 */
-.toc-sidebar::-webkit-scrollbar {
-  width: 6px;
-}
-
-.toc-sidebar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.toc-sidebar::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 3px;
-}
-
-.toc-sidebar::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
-:global(.dark) .toc-sidebar::-webkit-scrollbar-thumb {
-  background: #475569;
-}
-
-:global(.dark) .toc-sidebar::-webkit-scrollbar-thumb:hover {
-  background: #64748b;
-}
-
-/* 响应式 */
-@media (max-width: 1024px) {
-  .tech-doc-container {
-    display: block;
-  }
-}
-
 /* 打印样式 */
 @media print {
-  .toc-sidebar {
-    display: none;
-  }
-  
   .tech-doc-container {
     background: white;
   }

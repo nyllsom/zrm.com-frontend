@@ -58,7 +58,7 @@ const contentSlides = props.slides.filter(s => s.type === 'content');
           <template v-for="(slide, index) in contentSlides" :key="index">
             <section class="content-section">
               
-              <!-- 问题部分 -->
+              <!-- 章节内容 -->
               <div v-if="!slide.isContinuation" class="question-soft mb-8">
                 
                 <div class="flex items-start gap-4 mb-6">
@@ -77,7 +77,7 @@ const contentSlides = props.slides.filter(s => s.type === 'content');
                 </div>
               </div>
 
-              <!-- 解答部分 -->
+              <!-- 续写内容 -->
               <div v-else class="solution-soft ml-14 mt-6">
                 
                 <div class="flex items-center gap-3 mb-5">
@@ -86,7 +86,7 @@ const contentSlides = props.slides.filter(s => s.type === 'content');
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
                     </svg>
                   </div>
-                  <span class="text-sm text-stone-500 dark:text-slate-400 tracking-wide">解答</span>
+                <span class="text-sm text-stone-500 dark:text-slate-400 tracking-wide">Continuation</span>
                   <div class="flex-1 h-px bg-gradient-to-r from-stone-200 to-transparent dark:from-slate-700"></div>
                 </div>
 

@@ -20,6 +20,7 @@ interface CachedDocumentContent {
 
 const SUPPORTED_VIEW_MODES = [
   'slide',
+  'activity',
   'color',
   'elegant',
   'line',
