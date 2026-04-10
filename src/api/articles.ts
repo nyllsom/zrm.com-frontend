@@ -18,6 +18,8 @@ export interface Article {
   title: string;
   author: string;
   category: string;
+  date?: string;
+  published?: boolean;
   content: string;
   cover?: string;
   defaultMode: ArticleMode;
@@ -33,6 +35,8 @@ export interface CreateArticleRequest {
   title: string;
   author: string;
   category: string;
+  date: string;
+  published?: boolean;
   content: string;
   cover?: string;
   defaultMode: ArticleMode;

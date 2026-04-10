@@ -24,7 +24,7 @@ function mapArticle(article: Article): ActivityPostItem {
   return {
     id: article.id,
     title: article.title,
-    date: formatDate(article.createdAt || article.updatedAt),
+    date: formatDate(article.date || article.createdAt || article.updatedAt),
     cover: article.cover,
     author: article.author,
   };

@@ -47,7 +47,7 @@ export interface LivecodeBlockIdsRequest {
   blockIds: string[]
 }
 
-const livecodeApiBaseUrl = import.meta.env.VITE_LIVECODE_API_BASE_URL || '/livecodes-api'
+const livecodeApiBaseUrl = import.meta.env.VITE_LIVECODE_API_BASE_URL || '/api'
 
 const http = axios.create({
   baseURL: livecodeApiBaseUrl,

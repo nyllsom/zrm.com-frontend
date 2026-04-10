@@ -54,7 +54,7 @@ function mapArticleToDocMeta(article: Article): ReaderDocMeta {
     id: article.id,
     title: article.title,
     category: article.category,
-    date: formatDate(article.createdAt || article.updatedAt),
+    date: formatDate(article.date || article.createdAt || article.updatedAt),
     defaultMode: article.defaultMode,
     author: article.author,
     cover: article.cover,

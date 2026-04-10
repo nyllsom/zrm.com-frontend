@@ -74,7 +74,9 @@
                     ? 'bg-blue-50 dark:bg-blue-950/50 text-[#40B3FF] border-blue-100 dark:border-blue-900/50'
                     : 'border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200'">
                   <span class="font-medium leading-tight text-[13px] truncate">{{ doc.title }}</span>
-                  <span class="text-[10px] opacity-50 mt-0.5 font-mono">{{ doc.author }} · {{ doc.date || '暂无日期' }}</span>
+                  <span class="text-[10px] opacity-50 mt-0.5 font-mono">
+                    {{ doc.author }} · {{ doc.date || '暂无日期' }} · {{ doc.published ? '已发布' : '未发布' }}
+                  </span>
                 </button>
               </div>
             </div>
@@ -156,7 +158,7 @@
               <input v-model="form.title" type="text" placeholder="请输入文章标题"
                 class="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-gray-800 dark:text-gray-200 outline-none focus:border-[#40B3FF] transition-colors" />
             </div>
-            <div class="grid grid-cols-3 gap-3">
+            <div class="grid grid-cols-5 gap-3">
               <div>
                 <label class="block text-[11px] font-medium text-gray-400 dark:text-gray-500 mb-1">作者</label>
                 <input v-model="form.author" type="text" placeholder="作者"
@@ -182,6 +184,21 @@
                   <option value="minimal">minimal</option>
                   <option value="technical">technical</option>
                 </select>
+              </div>
+              <div>
+                <label class="block text-[11px] font-medium text-gray-400 dark:text-gray-500 mb-1">日期</label>
+                <input
+                  v-model="form.date"
+                  type="date"
+                  class="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-gray-800 dark:text-gray-200 outline-none focus:border-[#40B3FF] transition-colors"
+                />
+              </div>
+              <div class="flex flex-col">
+                <label class="block text-[11px] font-medium text-gray-400 dark:text-gray-500 mb-1">发布状态</label>
+                <label class="inline-flex h-[38px] items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 text-xs text-gray-700 dark:text-gray-300">
+                  <input v-model="form.published" type="checkbox" class="h-3.5 w-3.5 rounded border-gray-300" />
+                  <span>已发布</span>
+                </label>
               </div>
             </div>
             <div>
@@ -301,11 +318,11 @@
         <div class="flex-1 overflow-y-auto custom-scrollbar">
           <transition name="fade-view" mode="out-in">
             <SlideView v-if="previewMode === 'slide' && parsedSlides.length > 0" :slide="parsedSlides[currentSlideIndex]" />
-            <ActivityView v-else-if="previewMode === 'activity'" :slides="parsedSlides" />
-            <ColorView v-else-if="previewMode === 'color'" :slides="parsedSlides" />
-            <ElegantView v-else-if="previewMode === 'elegant'" :slides="parsedSlides" />
-            <LineView v-else-if="previewMode === 'line'" :slides="parsedSlides" />
-            <MinimalView v-else-if="previewMode === 'minimal'" :slides="parsedSlides" />
+            <ActivityView v-else-if="previewMode === 'activity'" :slides="parsedSlides" :date="form.date" />
+            <ColorView v-else-if="previewMode === 'color'" :slides="parsedSlides" :date="form.date" />
+            <ElegantView v-else-if="previewMode === 'elegant'" :slides="parsedSlides" :date="form.date" />
+            <LineView v-else-if="previewMode === 'line'" :slides="parsedSlides" :date="form.date" />
+            <MinimalView v-else-if="previewMode === 'minimal'" :slides="parsedSlides" :date="form.date" />
             <TechnicalView v-else-if="previewMode === 'technical'" :slides="parsedSlides" />
             <div v-else class="h-full flex items-center justify-center text-sm text-gray-400">暂无可显示内容</div>
           </transition>
@@ -410,6 +427,7 @@ interface ArticleListItem {
   author: string;
   category: string;
   date: string;
+  published: boolean;
   defaultMode: ArticleMode;
   cover?: string;
 }
@@ -419,6 +437,8 @@ interface AdminFormState {
   title: string;
   author: string;
   category: ArticleCategory;
+  date: string;
+  published: boolean;
   content: string;
   cover: string;
   defaultMode: ArticleMode;
@@ -455,6 +475,8 @@ const form = ref<AdminFormState>({
   title: '',
   author: '',
   category: 'activity',
+  date: new Date().toISOString().slice(0, 10),
+  published: false,
   content: '',
   cover: '',
   defaultMode: 'minimal',
@@ -596,13 +618,18 @@ function formatDate(dateString?: string): string {
   ).padStart(2, '0')}`;
 }
 
+function getTodayDateString(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
 function mapArticleToListItem(article: Article): ArticleListItem {
   return {
     id: article.id,
     title: article.title,
     author: article.author,
     category: article.category,
-    date: formatDate(article.createdAt || article.updatedAt),
+    date: formatDate(article.date || article.createdAt || article.updatedAt),
+    published: Boolean(article.published),
     defaultMode: normalizeViewMode(article.defaultMode),
     cover: article.cover,
   };
@@ -614,6 +641,8 @@ function applyArticleToForm(article: Article) {
     title: article.title || '',
     author: article.author || '',
     category: (article.category as ArticleCategory) || 'activity',
+    date: formatDate(article.date || article.createdAt || article.updatedAt) || getTodayDateString(),
+    published: Boolean(article.published),
     content: article.content || '',
     cover: article.cover || '',
     defaultMode: normalizeViewMode(article.defaultMode),
@@ -631,6 +660,8 @@ function resetForm() {
       title: '',
       author: '',
       category: 'activity',
+      date: getTodayDateString(),
+      published: false,
       content: '',
       cover: '',
       defaultMode: 'minimal',
@@ -659,6 +690,8 @@ function createNewArticle() {
     title: '',
     author: '',
     category: 'activity',
+    date: getTodayDateString(),
+    published: false,
     content: '',
     cover: '',
     defaultMode: 'minimal',
@@ -736,6 +769,8 @@ function buildPayload(): CreateArticleRequest {
     title: form.value.title.trim(),
     author: form.value.author.trim(),
     category: form.value.category,
+    date: form.value.date,
+    published: form.value.published,
     content: form.value.content,
     cover: form.value.cover.trim() || undefined,
     defaultMode: form.value.defaultMode,
@@ -758,6 +793,11 @@ async function saveArticle() {
 
   if (!form.value.category.trim()) {
     error.value = '分类不能为空';
+    return;
+  }
+
+  if (!form.value.date) {
+    error.value = '日期不能为空';
     return;
   }
 
@@ -815,6 +855,8 @@ async function deleteCurrentArticle() {
       title: '',
       author: '',
       category: 'activity',
+      date: getTodayDateString(),
+      published: false,
       content: '',
       cover: '',
       defaultMode: 'minimal',

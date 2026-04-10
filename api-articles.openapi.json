@@ -1,0 +1,365 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "AIA 社团博客 API",
+    "description": "AIA 论坛后端。",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "Articles"
+    }
+  ],
+  "paths": {
+    "/articles": {
+      "get": {
+        "summary": "获取文章列表",
+        "deprecated": false,
+        "description": "游客只能看到已发布文章；管理员 token 可看到全部文章",
+        "tags": [
+          "Articles"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/article.ArticleListResponse"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      },
+      "post": {
+        "summary": "发布文章",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "Articles"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/article.CreateRequest"
+              },
+              "examples": {}
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "{\"id\": \"uuid\"}",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "properties": {}
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/article.ErrorResponse"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/articles/{id}": {
+      "get": {
+        "summary": "获取文章详情",
+        "deprecated": false,
+        "description": "游客只能查看已发布文章；管理员 token 可查看全部文章",
+        "tags": [
+          "Articles"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "文章 ID (UUID)",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/article.Article"
+                }
+              }
+            },
+            "headers": {}
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/article.ErrorResponse"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      },
+      "put": {
+        "summary": "编辑文章",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "Articles"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "文章 ID",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/article.CreateRequest"
+              },
+              "examples": {}
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content",
+            "headers": {}
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/article.ErrorResponse"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "删除文章",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "Articles"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "文章 ID",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "article.Article": {
+        "type": "object",
+        "properties": {
+          "author": {
+            "description": "Author 作者姓名或昵称",
+            "type": "string",
+            "example": "负责人"
+          },
+          "category": {
+            "description": "Category 文章分类",
+            "type": "string",
+            "example": "技术分享"
+          },
+          "content": {
+            "description": "Content 文章正文",
+            "type": "string",
+            "example": "# 第一章\n内容如下..."
+          },
+          "cover": {
+            "description": "Cover 文章封面图 URL",
+            "type": "string",
+            "example": "https://example.com/cover.jpg"
+          },
+          "createdAt": {
+            "description": "CreatedAt 创建时间",
+            "type": "string"
+          },
+          "date": {
+            "description": "Date 手动设置的展示日期",
+            "type": "string",
+            "example": "2026-04-09"
+          },
+          "defaultMode": {
+            "description": "DefaultMode 展示模式：article, slide, homework",
+            "type": "string",
+            "example": "article"
+          },
+          "id": {
+            "description": "ID",
+            "type": "string",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "published": {
+            "description": "Published 是否已发布",
+            "type": "boolean",
+            "example": false
+          },
+          "title": {
+            "description": "Title 文章标题",
+            "type": "string",
+            "example": "关于后端架构的深度思考"
+          },
+          "updatedAt": {
+            "description": "UpdatedAt 更新时间",
+            "type": "string"
+          }
+        }
+      },
+      "article.ArticleListResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/article.Article"
+            }
+          }
+        }
+      },
+      "article.CreateRequest": {
+        "type": "object",
+        "required": [
+          "author",
+          "category",
+          "content",
+          "date",
+          "defaultMode",
+          "title"
+        ],
+        "properties": {
+          "author": {
+            "type": "string",
+            "example": "作者"
+          },
+          "category": {
+            "type": "string",
+            "example": "分类"
+          },
+          "content": {
+            "type": "string",
+            "example": "# 正文"
+          },
+          "cover": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "example": "2026-04-09"
+          },
+          "defaultMode": {
+            "type": "string",
+            "enum": [
+              "article",
+              "slide",
+              "homework"
+            ],
+            "example": "article"
+          },
+          "published": {
+            "type": "boolean",
+            "example": false
+          },
+          "title": {
+            "type": "string",
+            "example": "标题"
+          }
+        }
+      },
+      "article.ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "错误信息描述"
+          }
+        }
+      }
+    },
+    "responses": {},
+    "securitySchemes": {
+      "bearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "servers": [],
+  "security": []
+}

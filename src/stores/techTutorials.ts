@@ -24,7 +24,7 @@ function mapArticle(article: Article): TechTutorialItem {
   return {
     id: article.id,
     title: article.title,
-    date: formatDate(article.createdAt || article.updatedAt),
+    date: formatDate(article.date || article.createdAt || article.updatedAt),
     defaultMode: article.defaultMode,
     author: article.author,
   };
