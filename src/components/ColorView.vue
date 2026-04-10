@@ -193,48 +193,103 @@ const getColorScheme = (index: number) => {
 .prose-color {
   line-height: 1.75;
   color: #334155;
+  --ast-paragraph-color: #334155;
+  --ast-heading-color: #1e293b;
+  --ast-link-color: #0f766e;
+  --ast-table-cell-color: #334155;
+  --ast-blockquote-color: #475569;
+  --ast-inline-code-color: #0f172a;
+  --ast-pseudo-color: #334155;
+  --ast-code-meta-color: #475569;
 }
 
-:global(.dark) .prose-color {
+.dark .prose-color {
   color: #cbd5e1;
+  --ast-paragraph-color-dark: #cbd5e1;
+  --ast-heading-color: #f1f5f9;
+  --ast-link-color: #5eead4;
+  --ast-table-cell-color-dark: #cbd5e1;
+  --ast-blockquote-color-dark: #cbd5e1;
+  --ast-inline-code-bg-dark: rgba(148, 163, 184, 0.2);
+  --ast-inline-code-color-dark: #e2e8f0;
+  --ast-blockquote-bg-dark: transparent;
+  --ast-pseudo-color-dark: #cbd5e1;
+  --ast-code-meta-color-dark: #cbd5e1;
 }
 
-/* AstRenderer has its own .ast-* classes. Use class-based overrides here
-   so color mode typography can reliably win in both light/dark themes. */
-.prose-color :deep(.ast-paragraph),
-.prose-color :deep(.ast-list-item),
-.prose-color :deep(.ast-table-cell) {
+:deep(p),
+:deep(.ast-paragraph) {
+  margin-bottom: 1.25rem;
+  font-size: 1.0625rem;
+  line-height: 1.75;
   color: #334155;
 }
 
-:global(.dark) .prose-color :deep(.ast-paragraph),
-:global(.dark) .prose-color :deep(.ast-list-item),
-:global(.dark) .prose-color :deep(.ast-table-cell) {
+.dark .prose-color :deep(p),
+.dark .prose-color :deep(.ast-paragraph) {
   color: #cbd5e1;
 }
 
-.prose-color :deep(.ast-heading),
-.prose-color :deep(.ast-heading-3),
-.prose-color :deep(.ast-heading-4),
-.prose-color :deep(.ast-heading-5),
-.prose-color :deep(.ast-heading-6) {
+:deep(h3),
+:deep(.ast-heading),
+:deep(.ast-heading-3),
+:deep(.ast-heading-4),
+:deep(.ast-heading-5),
+:deep(.ast-heading-6) {
   color: #1e293b;
 }
 
-:global(.dark) .prose-color :deep(.ast-heading),
-:global(.dark) .prose-color :deep(.ast-heading-3),
-:global(.dark) .prose-color :deep(.ast-heading-4),
-:global(.dark) .prose-color :deep(.ast-heading-5),
-:global(.dark) .prose-color :deep(.ast-heading-6) {
+.dark .prose-color :deep(h3),
+.dark .prose-color :deep(.ast-heading),
+.dark .prose-color :deep(.ast-heading-3),
+.dark .prose-color :deep(.ast-heading-4),
+.dark .prose-color :deep(.ast-heading-5),
+.dark .prose-color :deep(.ast-heading-6) {
   color: #f1f5f9;
 }
 
-.prose-color :deep(.ast-link) {
+:deep(a),
+:deep(.ast-link) {
   color: #0f766e;
 }
 
-:global(.dark) .prose-color :deep(.ast-link) {
+.dark .prose-color :deep(a),
+.dark .prose-color :deep(.ast-link) {
   color: #5eead4;
+}
+
+:deep(blockquote),
+:deep(.ast-blockquote) {
+  color: #475569;
+}
+
+.dark .prose-color :deep(blockquote),
+.dark .prose-color :deep(.ast-blockquote) {
+  color: #cbd5e1;
+}
+
+:deep(code),
+:deep(.ast-inline-code) {
+  color: #0f172a;
+}
+
+.dark .prose-color :deep(code),
+.dark .prose-color :deep(.ast-inline-code) {
+  color: #e2e8f0;
+}
+
+:deep(th) {
+  color: #ffffff;
+}
+
+.dark .prose-color :deep(td),
+.dark .prose-color :deep(.ast-table-cell) {
+  color: #cbd5e1;
+}
+
+:deep(td),
+:deep(.ast-table-cell) {
+  color: #334155;
 }
 
 :deep(p) {
@@ -251,7 +306,7 @@ const getColorScheme = (index: number) => {
   color: #1e293b;
 }
 
-:global(.dark) :deep(h3) {
+.dark .prose-color :deep(h3) {
   color: #f1f5f9;
 }
 
@@ -412,7 +467,7 @@ const getColorScheme = (index: number) => {
   border-bottom: 1px solid #e2e8f0;
 }
 
-:global(.dark) :deep(td) {
+.dark .prose-color :deep(td) {
   border-bottom-color: #334155;
 }
 

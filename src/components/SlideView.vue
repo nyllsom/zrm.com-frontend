@@ -59,47 +59,81 @@ const splitGridClass = computed(() => {
 </script>
 
 <template>
-  <div class="w-full h-full bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-800 dark:text-slate-200 p-12 flex flex-col box-border min-h-0 transition-colors duration-300">
-    
-    <h2 
-      v-if="slide.type !== 'cover'" 
-      class="text-4xl font-light tracking-tight mb-8 text-slate-900 dark:text-slate-100 border-b-2 border-teal-300 dark:border-teal-600 pb-4 shrink-0"
-    >
-      {{ slide.title }}
-    </h2>
-
-    <div class="flex-1 w-full max-w-[1500px] mx-auto overflow-hidden min-h-0 relative">
-      
-      <div v-if="layoutMode === 'cover'" class="h-full flex flex-col items-center justify-center text-center gap-12">
-        <h1 class="text-6xl md:text-7xl leading-tight font-light tracking-tight text-slate-900 dark:text-slate-50">
-          {{ slide.title }}
-        </h1>
-        <div class="slide-prose max-w-3xl mx-auto text-slate-700 dark:text-slate-300 text-lg leading-8">
-          <AstRenderer v-for="(el, idx) in slideAnalysis.els" :key="idx" :node="el" />
-        </div>
+  <div class="slide-shell w-full h-full min-h-0 overflow-hidden bg-neutral-100 text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100 transition-colors duration-300">
+    <div class="slide-stage relative h-full w-full flex items-center justify-center px-4 py-5 sm:px-6 sm:py-6 lg:px-8 lg:py-8">
+      <div class="slide-stage-bg absolute inset-0 pointer-events-none">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(0,0,0,0.06),_transparent_38%),radial-gradient(circle_at_bottom_right,_rgba(0,0,0,0.04),_transparent_34%)] dark:bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.06),_transparent_38%),radial-gradient(circle_at_bottom_right,_rgba(255,255,255,0.04),_transparent_34%)]"></div>
+        <div class="absolute inset-0 opacity-[0.04] dark:opacity-[0.08] bg-[linear-gradient(to_right,rgba(0,0,0,0.9)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.9)_1px,transparent_1px)] bg-[size:48px_48px]"></div>
       </div>
 
-      <div v-else-if="layoutMode === 'split'" :class="['h-full grid gap-8 pb-4', splitGridClass]">
-        <div class="flex flex-col justify-center max-h-full overflow-y-auto pr-6 scrollbar-hide min-w-0 pb-8 border-r-2 border-teal-200 dark:border-teal-800/40">
-          <div class="slide-prose text-slate-700 dark:text-slate-300 text-base leading-8 space-y-6">
-            <AstRenderer v-for="(el, idx) in slideAnalysis.textNodes" :key="'t'+idx" :node="el" />
+      <section class="slide-canvas relative w-full h-full max-w-[min(1440px,100%)] max-h-[calc(100vh-4.5rem)] aspect-[16/9] rounded-[2rem] bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 shadow-[0_30px_80px_-24px_rgba(0,0,0,0.24)] dark:shadow-[0_36px_90px_-24px_rgba(0,0,0,0.7)] overflow-hidden">
+        <div class="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.92),rgba(255,255,255,0.76))] dark:bg-[linear-gradient(135deg,rgba(23,23,23,0.96),rgba(23,23,23,0.9))]"></div>
+
+        <div class="relative z-10 flex h-full min-h-0 flex-col px-6 py-6 sm:px-8 sm:py-8 lg:px-12 lg:py-10">
+          <header v-if="slide.type !== 'cover'" class="slide-header shrink-0 mb-5 sm:mb-7">
+            <div class="flex items-center gap-3 mb-4">
+              <span class="inline-flex items-center rounded-full border border-neutral-200/80 dark:border-neutral-700 bg-neutral-50/90 dark:bg-neutral-800/90 px-3 py-1 text-[10px] font-semibold tracking-[0.35em] uppercase text-neutral-500 dark:text-neutral-400">
+                Slide
+              </span>
+              <span class="h-px flex-1 bg-gradient-to-r from-neutral-300 to-transparent dark:from-neutral-700"></span>
+            </div>
+            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-50 max-w-4xl leading-[1.08]">
+              {{ slide.title }}
+            </h2>
+          </header>
+
+          <div v-if="layoutMode === 'cover'" class="flex-1 min-h-0 flex flex-col items-center justify-center text-center">
+            <div class="mb-5 inline-flex items-center rounded-full border border-neutral-200/80 dark:border-neutral-700 bg-neutral-50/90 dark:bg-neutral-800/90 px-4 py-1.5 text-[10px] sm:text-xs font-semibold tracking-[0.35em] uppercase text-neutral-500 dark:text-neutral-400">
+              Presentation
+            </div>
+
+            <h1 class="max-w-5xl text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-50 leading-[0.95]">
+              {{ slide.title }}
+            </h1>
+
+            <div class="mt-8 h-1 w-24 rounded-full bg-neutral-900 dark:bg-neutral-100"></div>
+
+            <div class="slide-prose mt-10 max-w-3xl text-center text-lg sm:text-xl leading-9 text-neutral-700 dark:text-neutral-300">
+              <AstRenderer v-for="(el, idx) in slideAnalysis.els" :key="idx" :node="el" />
+            </div>
+          </div>
+
+          <div
+            v-else-if="layoutMode === 'split'"
+            :class="['flex-1 min-h-0 grid gap-6 lg:gap-8', splitGridClass]"
+          >
+            <div class="flex min-h-0 flex-col justify-center rounded-[1.5rem] border border-neutral-200/70 dark:border-neutral-800 bg-neutral-50/70 dark:bg-neutral-950/45 px-5 py-5 sm:px-6 sm:py-6 overflow-y-auto scrollbar-hide">
+              <div class="slide-prose text-neutral-700 dark:text-neutral-300 text-base lg:text-lg leading-8 space-y-5">
+                <AstRenderer v-for="(el, idx) in slideAnalysis.textNodes" :key="'t'+idx" :node="el" />
+              </div>
+            </div>
+
+            <div class="flex min-h-0 flex-col justify-center items-center rounded-[1.5rem] border border-neutral-200/70 dark:border-neutral-800 bg-white/70 dark:bg-neutral-950/45 px-4 py-4 sm:px-5 sm:py-5 overflow-y-auto scrollbar-hide">
+              <div class="w-full h-full flex items-center justify-center">
+                <div class="w-full max-w-full flex flex-col items-center gap-5">
+                  <AstRenderer v-for="(el, idx) in slideAnalysis.visualNodes" :key="'v'+idx" :node="el" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div v-else-if="layoutMode === 'visual-only'" class="flex-1 min-h-0 flex items-center justify-center">
+            <div class="slide-visual-frame w-full h-full rounded-[1.5rem] border border-neutral-200/70 dark:border-neutral-800 bg-neutral-50/60 dark:bg-neutral-950/40 p-4 sm:p-6 flex items-center justify-center overflow-y-auto scrollbar-hide">
+              <div class="w-full max-w-[1100px] flex items-center justify-center">
+                <AstRenderer v-for="(el, idx) in slideAnalysis.visualNodes" :key="'v'+idx" :node="el" />
+              </div>
+            </div>
+          </div>
+
+          <div v-else class="flex-1 min-h-0 flex items-center justify-center">
+            <div class="slide-visual-frame w-full h-full max-w-[1100px] rounded-[1.5rem] border border-neutral-200/70 dark:border-neutral-800 bg-neutral-50/65 dark:bg-neutral-950/40 px-5 py-5 sm:px-7 sm:py-7 overflow-y-auto scrollbar-hide">
+              <div class="slide-prose mx-auto w-full max-w-4xl text-neutral-700 dark:text-neutral-300 text-base lg:text-lg leading-8">
+                <AstRenderer v-for="(el, idx) in slideAnalysis.textNodes" :key="idx" :node="el" />
+              </div>
+            </div>
           </div>
         </div>
-        <div class="flex flex-col justify-center items-center gap-6 max-h-full overflow-y-auto pr-4 scrollbar-hide min-w-0 pb-8">
-          <AstRenderer v-for="(el, idx) in slideAnalysis.visualNodes" :key="'v'+idx" :node="el" />
-        </div>
-      </div>
-
-      <div v-else-if="layoutMode === 'visual-only'" class="h-full flex flex-col justify-center items-center max-h-full overflow-y-auto scrollbar-hide pb-8">
-        <div class="w-full max-w-5xl">
-          <AstRenderer v-for="(el, idx) in slideAnalysis.visualNodes" :key="'v'+idx" :node="el" />
-        </div>
-      </div>
-
-      <div v-else class="slide-prose h-full flex flex-col justify-center pb-4 max-h-full overflow-y-auto scrollbar-hide pr-4 max-w-5xl mx-auto w-full text-slate-700 dark:text-slate-300 text-base leading-8">
-        <AstRenderer v-for="(el, idx) in slideAnalysis.textNodes" :key="idx" :node="el" />
-      </div>
-
+      </section>
     </div>
   </div>
 </template>
@@ -108,50 +142,108 @@ const splitGridClass = computed(() => {
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
+.slide-shell {
+  font-family: "Inter", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+}
+
 .slide-prose :deep(.ast-paragraph) {
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.slide-prose :deep(p) {
+  color: rgb(82 82 82);
+}
+
+.dark .slide-prose :deep(p) {
+  color: rgb(212 212 212);
 }
 
 .slide-prose :deep(.ast-heading) {
-  color: rgb(15 23 42);
+  color: rgb(23 23 23);
+  margin-top: 0.2rem;
+  margin-bottom: 0.9rem;
 }
 
-:global(.dark) .slide-prose :deep(.ast-heading) {
-  color: rgb(248 250 252);
+.dark .slide-prose :deep(.ast-heading) {
+  color: rgb(250 250 250);
 }
 
 .slide-prose :deep(.ast-inline-code) {
-  background: rgba(20, 184, 166, 0.08);
+  background: rgba(0, 0, 0, 0.06);
 }
 
-:global(.dark) .slide-prose :deep(.ast-inline-code) {
-  background: rgba(45, 212, 191, 0.18);
+.dark .slide-prose :deep(.ast-inline-code) {
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .slide-prose :deep(.ast-link) {
-  color: rgb(13 148 136);
+  color: rgb(23 23 23);
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.18em;
 }
 
-:global(.dark) .slide-prose :deep(.ast-link) {
-  color: rgb(45 212 191);
+.dark .slide-prose :deep(.ast-link) {
+  color: rgb(250 250 250);
 }
 
 .slide-prose :deep(.ast-blockquote) {
-  border-left-color: rgb(45 212 191);
-  padding-left: 1.1rem;
+  border-left-color: rgb(64 64 64);
+  padding-left: 1rem;
+  margin: 1.25rem 0;
 }
 
-:global(.dark) .slide-prose :deep(.ast-blockquote) {
-  background: rgba(15, 23, 42, 0.35);
+.dark .slide-prose :deep(.ast-blockquote) {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.slide-prose :deep(ul),
+.slide-prose :deep(ol) {
+  padding-left: 1.25rem;
+  margin: 1rem 0;
+}
+
+.slide-prose :deep(li + li) {
+  margin-top: 0.45rem;
+}
+
+.slide-prose :deep(table) {
+  margin: 1.25rem 0;
+}
+
+.slide-prose :deep(th),
+.slide-prose :deep(td) {
+  padding: 0.65rem 0.8rem;
 }
 
 .slide-prose :deep(.ast-code-frame),
 .slide-prose :deep(.ast-pseudo) {
-  background: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.85);
 }
 
-:global(.dark) .slide-prose :deep(.ast-code-frame),
-:global(.dark) .slide-prose :deep(.ast-pseudo) {
-  background: rgba(15, 23, 42, 0.5);
+.dark .slide-prose :deep(.ast-code-frame),
+.dark .slide-prose :deep(.ast-pseudo) {
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.slide-visual-frame :deep(img) {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.slide-visual-frame :deep(.ast-image) {
+  display: flex;
+  justify-content: center;
+}
+
+.slide-canvas :deep(pre) {
+  margin: 0;
+}
+
+@media (max-width: 1024px) {
+  .slide-canvas {
+    aspect-ratio: auto;
+    min-height: 100%;
+  }
 }
 </style>

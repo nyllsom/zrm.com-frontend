@@ -20,44 +20,44 @@ const contentSlides = props.slides.filter(s => s.type === 'content');
 </script>
 
 <template>
-  <div class="elegant-container min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 py-16 px-4 sm:px-6 lg:px-8">
+  <div class="elegant-container min-h-screen bg-white dark:bg-neutral-950 py-16 px-4 sm:px-6 lg:px-8">
     
     <!-- 装饰性背景元素 -->
     <div class="fixed inset-0 overflow-hidden pointer-events-none opacity-30">
-      <div class="absolute top-20 right-20 w-96 h-96 bg-gradient-to-br from-purple-200 to-pink-200 dark:from-purple-900/20 dark:to-pink-900/20 rounded-full blur-3xl"></div>
-      <div class="absolute bottom-20 left-20 w-96 h-96 bg-gradient-to-tr from-blue-200 to-cyan-200 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-full blur-3xl"></div>
+      <div class="absolute top-20 right-20 w-96 h-96 bg-neutral-200/50 dark:bg-neutral-800/30 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-20 left-20 w-96 h-96 bg-neutral-300/40 dark:bg-neutral-700/20 rounded-full blur-3xl"></div>
     </div>
 
-    <article class="elegant-paper relative max-w-5xl mx-auto bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm shadow-2xl rounded-2xl overflow-hidden">
+    <article class="elegant-paper relative max-w-5xl mx-auto bg-white dark:bg-neutral-900 backdrop-blur-sm shadow-2xl rounded-2xl overflow-hidden">
       
       <!-- 封面区域 -->
-      <header v-if="slides.length > 0 && slides[0].type === 'cover'" class="cover-section relative bg-gradient-to-br from-slate-900 to-slate-800 dark:from-slate-950 dark:to-slate-900 text-white p-16 md:p-24">
+      <header v-if="slides.length > 0 && slides[0].type === 'cover'" class="cover-section relative bg-neutral-950 text-white p-16 md:p-24">
         <!-- 装饰线条 -->
-        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500"></div>
-        <div class="absolute top-0 right-0 w-32 h-32 border-t-4 border-r-4 border-purple-400/30 rounded-tr-2xl"></div>
-        <div class="absolute bottom-0 left-0 w-32 h-32 border-b-4 border-l-4 border-blue-400/30 rounded-bl-2xl"></div>
+        <div class="absolute top-0 left-0 w-full h-1 bg-neutral-200 dark:bg-neutral-700"></div>
+        <div class="absolute top-0 right-0 w-32 h-32 border-t-4 border-r-4 border-white/15 rounded-tr-2xl"></div>
+        <div class="absolute bottom-0 left-0 w-32 h-32 border-b-4 border-l-4 border-white/15 rounded-bl-2xl"></div>
         
         <div class="relative z-10">
-          <div class="inline-block px-4 py-1 mb-6 text-sm font-medium tracking-widest uppercase bg-white/10 backdrop-blur rounded-full border border-white/20">
+          <div class="inline-block px-4 py-1 mb-6 text-sm font-medium tracking-widest uppercase bg-white/10 backdrop-blur rounded-full border border-white/15">
             {{ courseName || 'Feature Article' }}
           </div>
           
-          <h1 class="text-5xl md:text-6xl font-bold mb-8 leading-tight bg-gradient-to-r from-white via-slate-100 to-slate-200 bg-clip-text text-transparent">
+          <h1 class="text-5xl md:text-6xl font-bold mb-8 leading-tight text-white">
             {{ slides[0].title }}
           </h1>
           
-          <div class="flex flex-wrap items-center gap-6 text-lg text-slate-300 mb-8">
+          <div class="flex flex-wrap items-center gap-6 text-lg text-neutral-300 mb-8">
             <div class="flex items-center gap-2">
-              <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-sm font-bold">
+              <div class="w-8 h-8 rounded-full bg-neutral-700 flex items-center justify-center text-white text-sm font-bold">
                 {{ (studentName || 'S')[0] }}
               </div>
               <span>{{ studentName || 'Author' }}</span>
             </div>
-            <span class="text-slate-500">•</span>
+            <span class="text-neutral-600">•</span>
             <span>{{ displayDate }}</span>
           </div>
 
-          <div v-if="slides[0].elements.length > 0" class="mt-12 pt-8 border-t border-white/10 text-slate-200 prose prose-invert prose-lg max-w-none">
+          <div v-if="slides[0].elements.length > 0" class="mt-12 pt-8 border-t border-white/10 text-neutral-200 prose prose-invert prose-lg max-w-none">
             <AstRenderer v-for="(el, idx) in slides[0].elements" :key="idx" :node="el" />
           </div>
         </div>
@@ -72,14 +72,14 @@ const contentSlides = props.slides.filter(s => s.type === 'content');
             <div v-if="!slide.isContinuation" class="question-section mb-10 animate-fade-in">
               <div class="flex items-start gap-4 mb-6">
                 <!-- 章节编号 -->
-                <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-purple-500/30">
+                <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-neutral-900 dark:bg-neutral-100 flex items-center justify-center text-white dark:text-neutral-900 font-bold text-lg shadow-lg shadow-neutral-500/20">
                   {{ index + 1 }}
                 </div>
                 
                 <div class="flex-1">
                   <div class="inline-flex items-center gap-2 mb-2">
-                    <span class="text-xs font-bold tracking-widest uppercase text-purple-600 dark:text-purple-400">Section</span>
-                    <div class="h-px flex-1 bg-gradient-to-r from-purple-200 to-transparent dark:from-purple-800 w-16"></div>
+                    <span class="text-xs font-bold tracking-widest uppercase text-neutral-600 dark:text-neutral-400">Section</span>
+                    <div class="h-px flex-1 bg-gradient-to-r from-neutral-200 to-transparent dark:from-neutral-700 w-16"></div>
                   </div>
                   <h2 class="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-4">
                     {{ slide.title }}
@@ -87,8 +87,8 @@ const contentSlides = props.slides.filter(s => s.type === 'content');
                 </div>
               </div>
               
-              <div class="question-content relative ml-16 p-6 rounded-xl bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/30 dark:to-pink-950/30 border border-purple-100 dark:border-purple-900/50 shadow-sm hover:shadow-md transition-shadow duration-300">
-                <div class="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 rotate-45 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/30 dark:to-pink-950/30 border-l border-b border-purple-100 dark:border-purple-900/50"></div>
+              <div class="question-content relative ml-16 p-6 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 shadow-sm hover:shadow-md transition-shadow duration-300">
+                <div class="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 rotate-45 bg-white dark:bg-neutral-900 border-l border-b border-neutral-200 dark:border-neutral-700"></div>
                 <div class="prose prose-slate dark:prose-invert max-w-none prose-lg">
                   <AstRenderer v-for="(el, idx) in slide.elements" :key="'q'+idx" :node="el" />
                 </div>
@@ -98,23 +98,23 @@ const contentSlides = props.slides.filter(s => s.type === 'content');
             <!-- 续写内容 -->
             <div v-else class="solution-section ml-16 animate-fade-in-delay">
               <div class="flex items-center gap-3 mb-6">
-                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/30">
+                <div class="w-10 h-10 rounded-lg bg-neutral-900 dark:bg-neutral-100 flex items-center justify-center text-white dark:text-neutral-900 shadow-lg shadow-neutral-500/20">
                   <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="20 6 9 17 4 12"></polyline>
                   </svg>
                 </div>
-                <span class="text-sm font-bold tracking-widest uppercase text-blue-600 dark:text-blue-400">Continuation</span>
-                <div class="h-px flex-1 bg-gradient-to-r from-blue-200 to-transparent dark:from-blue-800"></div>
+                <span class="text-sm font-bold tracking-widest uppercase text-neutral-600 dark:text-neutral-400">Continuation</span>
+                <div class="h-px flex-1 bg-gradient-to-r from-neutral-200 to-transparent dark:from-neutral-700"></div>
               </div>
               
-              <div class="solution-content p-6 rounded-xl bg-gradient-to-br from-slate-50 to-slate-100/50 dark:from-slate-800/50 dark:to-slate-900/50 border border-slate-200 dark:border-slate-700 shadow-sm">
+              <div class="solution-content p-6 rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 shadow-sm">
                 <div class="prose prose-slate dark:prose-invert max-w-none prose-lg">
                   <AstRenderer v-for="(el, idx) in slide.elements" :key="'a'+idx" :node="el" />
                 </div>
                 
                 <!-- 证毕符号 -->
                 <div class="flex justify-end mt-6">
-                  <div class="w-5 h-5 border-2 border-slate-400 dark:border-slate-500"></div>
+                  <div class="w-5 h-5 border-2 border-neutral-400 dark:border-neutral-500"></div>
                 </div>
               </div>
             </div>
@@ -123,21 +123,21 @@ const contentSlides = props.slides.filter(s => s.type === 'content');
 
           <!-- 分隔线 -->
           <div v-if="index < contentSlides.length - 1" class="divider-elegant flex items-center gap-4 my-12">
-            <div class="h-px flex-1 bg-gradient-to-r from-transparent via-slate-300 to-transparent dark:via-slate-700"></div>
+            <div class="h-px flex-1 bg-gradient-to-r from-transparent via-neutral-300 to-transparent dark:via-neutral-700"></div>
             <div class="flex gap-1">
-              <div class="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700"></div>
-              <div class="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-slate-600"></div>
-              <div class="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700"></div>
+              <div class="w-1.5 h-1.5 rounded-full bg-neutral-300 dark:bg-neutral-700"></div>
+              <div class="w-1.5 h-1.5 rounded-full bg-neutral-400 dark:bg-neutral-600"></div>
+              <div class="w-1.5 h-1.5 rounded-full bg-neutral-300 dark:bg-neutral-700"></div>
             </div>
-            <div class="h-px flex-1 bg-gradient-to-r from-transparent via-slate-300 to-transparent dark:via-slate-700"></div>
+            <div class="h-px flex-1 bg-gradient-to-r from-transparent via-neutral-300 to-transparent dark:via-neutral-700"></div>
           </div>
         </template>
       </main>
 
       <!-- 页脚 -->
-      <footer class="footer-section relative p-8 text-center bg-gradient-to-r from-slate-50 via-white to-slate-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-        <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent dark:via-slate-700"></div>
-        <p class="text-sm text-slate-500 dark:text-slate-400 font-medium">
+      <footer class="footer-section relative p-8 text-center bg-white dark:bg-neutral-900">
+        <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-neutral-200 to-transparent dark:via-neutral-700"></div>
+        <p class="text-sm text-neutral-500 dark:text-neutral-400 font-medium">
           Created with Local Studio · {{ new Date().getFullYear() }}
         </p>
       </footer>
@@ -184,28 +184,54 @@ const contentSlides = props.slides.filter(s => s.type === 'content');
   color: #cbd5e1;
 }
 
+:deep(h3),
+:deep(h4) {
+  color: #171717;
+}
+
+:global(.dark) :deep(h3),
+:global(.dark) :deep(h4) {
+  color: #fafafa;
+}
+
+:deep(a) {
+  color: #171717;
+}
+
+:global(.dark) :deep(a) {
+  color: #fafafa;
+}
+
+:deep(blockquote) {
+  color: #525252;
+}
+
+:global(.dark) :deep(blockquote) {
+  color: #d4d4d4;
+}
+
 :deep(code) {
   font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
   font-size: 0.9em;
   padding: 0.2em 0.4em;
-  background: rgba(100, 100, 100, 0.1);
+  background: rgba(0, 0, 0, 0.06);
   border-radius: 0.25rem;
 }
 
 :global(.dark) :deep(code) {
-  background: rgba(148, 163, 184, 0.16);
-  color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.08);
+  color: #f5f5f5;
 }
 
 :deep(.shiki) {
   border-radius: 0.75rem !important;
   padding: 1.25rem !important;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
-  border: 1px solid rgba(100, 100, 100, 0.1) !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
 }
 
 :global(.dark) :deep(.shiki) {
-  border-color: rgba(148, 163, 184, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
   box-shadow: 0 6px 18px -6px rgba(0, 0, 0, 0.55) !important;
 }
 

@@ -17,7 +17,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://192.168.1.87:8080',
+        target: 'https://nju-aia.com',
         changeOrigin: true,
       },
     },

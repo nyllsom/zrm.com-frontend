@@ -209,7 +209,7 @@ const contentSlides = props.slides.filter(s => s.type === 'content');
   --line-quote-bg: #fafaf9;
 }
 
-:global(.dark) .line-root {
+.dark .line-root {
   --line-ornament: #fafaf9;
   --line-body-color: #e7e5e4;
   --line-h3-color: #fafaf9;
@@ -230,25 +230,45 @@ const contentSlides = props.slides.filter(s => s.type === 'content');
   --line-quote-bg: #1c1917;
 
   --ast-paragraph-color: var(--line-body-color);
+  --ast-paragraph-color-dark: var(--line-body-color);
   --ast-heading-color: var(--line-h3-color);
+  --ast-heading-color-dark: var(--line-h3-color);
+  --ast-link-color: var(--line-body-color);
+  --ast-link-color-dark: var(--line-body-color);
   --ast-table-cell-color-dark: var(--line-body-color);
   --ast-inline-code-bg-dark: var(--line-inline-code-bg);
   --ast-inline-code-color-dark: var(--line-inline-code-color);
   --ast-table-row-border-dark: var(--line-table-cell-border);
   --ast-blockquote-border-dark: var(--line-quote-border-strong);
   --ast-blockquote-color-dark: var(--line-body-color);
+  --ast-pseudo-color-dark: var(--line-body-color);
+  --ast-code-meta-color-dark: var(--line-body-color);
 }
 
 .line-root {
   --ast-paragraph-color: var(--line-body-color);
+  --ast-paragraph-color-dark: var(--line-body-color);
   --ast-heading-color: var(--line-h3-color);
+  --ast-heading-color-dark: var(--line-h3-color);
   --ast-link-color: inherit;
+  --ast-link-color-dark: var(--line-body-color);
   --ast-table-cell-color: var(--line-body-color);
+  --ast-table-cell-color-dark: var(--line-body-color);
   --ast-inline-code-bg: var(--line-inline-code-bg);
   --ast-inline-code-color: var(--line-inline-code-color);
+  --ast-inline-code-bg-dark: var(--line-inline-code-bg);
+  --ast-inline-code-color-dark: var(--line-inline-code-color);
   --ast-table-row-border: var(--line-table-cell-border);
+  --ast-table-row-border-dark: var(--line-table-cell-border);
   --ast-blockquote-border: var(--line-quote-border-strong);
   --ast-blockquote-color: var(--line-body-color);
+  --ast-blockquote-border-dark: var(--line-quote-border-strong);
+  --ast-blockquote-color-dark: var(--line-body-color);
+  --ast-blockquote-bg-dark: var(--line-quote-bg);
+  --ast-pseudo-color: var(--line-body-color);
+  --ast-pseudo-color-dark: var(--line-body-color);
+  --ast-code-meta-color: var(--line-body-color);
+  --ast-code-meta-color-dark: var(--line-body-color);
 }
 
 /* 四角装饰线 */
@@ -351,6 +371,57 @@ const contentSlides = props.slides.filter(s => s.type === 'content');
 /* 内容排版 */
 .prose-line {
   line-height: 1.8;
+  color: var(--line-body-color);
+}
+
+:deep(p),
+:deep(.ast-paragraph) {
+  margin-bottom: 1.25rem;
+  font-size: 1.0625rem;
+  line-height: 1.8;
+  color: var(--line-body-color);
+}
+
+.dark .prose-line :deep(p),
+.dark .prose-line :deep(.ast-paragraph) {
+  color: var(--line-body-color);
+}
+
+:deep(h3),
+:deep(.ast-heading),
+:deep(.ast-heading-3),
+:deep(.ast-heading-4),
+:deep(.ast-heading-5),
+:deep(.ast-heading-6) {
+  color: var(--line-h3-color);
+  border-bottom: 1px solid var(--line-h3-border);
+  padding-bottom: 0.5rem;
+}
+
+:deep(a),
+:deep(.ast-link) {
+  color: inherit;
+}
+
+:deep(blockquote),
+:deep(.ast-blockquote) {
+  color: var(--line-body-color);
+}
+
+:deep(code),
+:deep(.ast-inline-code) {
+  color: var(--line-inline-code-color);
+  background: var(--line-inline-code-bg);
+  border: 1px solid var(--line-inline-code-border);
+}
+
+:deep(td),
+:deep(.ast-table-cell) {
+  color: var(--line-body-color);
+}
+
+.dark .prose-line :deep(td),
+.dark .prose-line :deep(.ast-table-cell) {
   color: var(--line-body-color);
 }
 

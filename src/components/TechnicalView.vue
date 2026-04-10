@@ -19,9 +19,9 @@ const contentSlides = computed(() =>
 // 难度标签颜色
 const difficultyConfig = computed(() => {
   const configs = {
-    beginner: { label: '入门', color: 'from-green-500 to-emerald-600', bg: 'bg-green-50 dark:bg-green-950/30', text: 'text-green-700 dark:text-green-400' },
-    intermediate: { label: '进阶', color: 'from-blue-500 to-cyan-600', bg: 'bg-blue-50 dark:bg-blue-950/30', text: 'text-blue-700 dark:text-blue-400' },
-    advanced: { label: '高级', color: 'from-purple-500 to-pink-600', bg: 'bg-purple-50 dark:bg-purple-950/30', text: 'text-purple-700 dark:text-purple-400' },
+    beginner: { label: '入门', color: 'from-neutral-400 to-neutral-600', bg: 'bg-neutral-100 dark:bg-neutral-800', text: 'text-neutral-700 dark:text-neutral-300' },
+    intermediate: { label: '进阶', color: 'from-neutral-500 to-neutral-700', bg: 'bg-neutral-100 dark:bg-neutral-800', text: 'text-neutral-700 dark:text-neutral-300' },
+    advanced: { label: '高级', color: 'from-neutral-600 to-neutral-800', bg: 'bg-neutral-100 dark:bg-neutral-800', text: 'text-neutral-700 dark:text-neutral-300' },
   };
   return configs[props.difficulty || 'beginner'];
 });
@@ -29,7 +29,7 @@ const difficultyConfig = computed(() => {
 </script>
 
 <template>
-  <div class="tech-doc-container min-h-screen bg-slate-50 dark:bg-slate-950">
+  <div class="tech-doc-container min-h-screen bg-white dark:bg-neutral-950">
     <main class="overflow-y-auto">
       <div class="max-w-4xl mx-auto px-6 py-12 lg:px-12">
         
@@ -45,26 +45,26 @@ const difficultyConfig = computed(() => {
               </svg>
               {{ difficultyConfig.label }}
             </span>
-            <span class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-medium">
+            <span class="px-3 py-1.5 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 text-xs font-medium">
               教程
             </span>
           </div>
 
-          <h1 class="text-4xl lg:text-5xl font-bold text-slate-900 dark:text-slate-100 mb-6 leading-tight tracking-tight">
+          <h1 class="text-4xl lg:text-5xl font-bold text-neutral-950 dark:text-neutral-50 mb-6 leading-tight tracking-tight">
             {{ slides[0].title }}
           </h1>
 
-          <div v-if="author" class="flex items-center gap-3 text-slate-600 dark:text-slate-400 mb-8">
-            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold">
+          <div v-if="author" class="flex items-center gap-3 text-neutral-600 dark:text-neutral-400 mb-8">
+            <div class="w-10 h-10 rounded-full bg-neutral-900 dark:bg-neutral-100 flex items-center justify-center text-white dark:text-neutral-900 font-bold">
               {{ author[0] }}
             </div>
             <div>
-              <div class="text-sm font-medium text-slate-900 dark:text-slate-100">{{ author }}</div>
-              <div class="text-xs text-slate-500">技术作者</div>
+              <div class="text-sm font-medium text-neutral-950 dark:text-neutral-50">{{ author }}</div>
+              <div class="text-xs text-neutral-500 dark:text-neutral-500">技术作者</div>
             </div>
           </div>
 
-          <div v-if="slides[0].elements.length > 0" class="prose prose-slate dark:prose-invert prose-lg max-w-none intro-section p-6 rounded-xl bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/30 dark:to-cyan-950/30 border border-blue-100 dark:border-blue-900/50">
+          <div v-if="slides[0].elements.length > 0" class="prose prose-slate dark:prose-invert prose-lg max-w-none intro-section p-6 rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
             <AstRenderer v-for="(el, idx) in slides[0].elements" :key="idx" :node="el" />
           </div>
         </header>
@@ -80,21 +80,21 @@ const difficultyConfig = computed(() => {
               <!-- 章节标题 -->
               <div v-if="!slide.isContinuation" class="section-header mb-8">
                 <div class="flex items-center gap-4 mb-4">
-                  <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-slate-700 to-slate-900 dark:from-slate-600 dark:to-slate-800 text-white font-mono text-sm font-bold shadow-lg">
+                  <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 font-mono text-sm font-bold shadow-lg">
                     {{ index + 1 }}
                   </div>
-                  <h2 class="text-3xl font-bold text-slate-900 dark:text-slate-100 flex-1">
+                  <h2 class="text-3xl font-bold text-neutral-950 dark:text-neutral-50 flex-1">
                     {{ slide.title }}
                   </h2>
                 </div>
-                <div class="h-1 w-20 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full"></div>
+                <div class="h-1 w-20 bg-gradient-to-r from-neutral-400 to-neutral-700 rounded-full"></div>
               </div>
 
               <!-- 继续标记 -->
-              <div v-else class="flex items-center gap-3 mb-6 text-slate-500 dark:text-slate-400">
-                <div class="flex-1 h-px bg-slate-200 dark:bg-slate-800"></div>
+              <div v-else class="flex items-center gap-3 mb-6 text-neutral-500 dark:text-neutral-400">
+                <div class="flex-1 h-px bg-neutral-200 dark:bg-neutral-800"></div>
                 <span class="text-xs font-mono uppercase tracking-wider">继续</span>
-                <div class="flex-1 h-px bg-slate-200 dark:bg-slate-800"></div>
+                <div class="flex-1 h-px bg-neutral-200 dark:bg-neutral-800"></div>
               </div>
 
               <!-- 内容区域 -->
@@ -107,8 +107,8 @@ const difficultyConfig = computed(() => {
         </div>
 
         <!-- 页脚 -->
-        <footer class="mt-20 pt-12 border-t border-slate-200 dark:border-slate-800">
-          <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-500 dark:text-slate-500">
+        <footer class="mt-20 pt-12 border-t border-neutral-200 dark:border-neutral-800">
+          <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-neutral-500 dark:text-neutral-500">
             <div class="flex items-center gap-2">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
@@ -135,8 +135,8 @@ const difficultyConfig = computed(() => {
 :deep(.shiki) {
   border-radius: 0.75rem !important;
   padding: 1.5rem !important;
-  border: 1px solid rgba(100, 120, 140, 0.1) !important;
-  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.08) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.06) !important;
   font-size: 0.9em !important;
   line-height: 1.7 !important;
   margin: 1.5rem 0 !important;
@@ -147,15 +147,15 @@ const difficultyConfig = computed(() => {
   font-feature-settings: "liga", "calt";
   font-size: 0.9em;
   padding: 0.2em 0.4em;
-  background: rgba(100, 120, 140, 0.1);
+  background: rgba(0, 0, 0, 0.06);
   border-radius: 0.375rem;
   font-weight: 500;
 }
 
 /* 提示框和警告框 */
 :deep(blockquote) {
-  border-left: 4px solid #3b82f6;
-  background: linear-gradient(to right, rgba(59, 130, 246, 0.05), transparent);
+  border-left: 4px solid #404040;
+  background: linear-gradient(to right, rgba(64, 64, 64, 0.05), transparent);
   padding: 1rem 1.5rem;
   margin: 1.5rem 0;
   border-radius: 0 0.5rem 0.5rem 0;
@@ -166,7 +166,7 @@ const difficultyConfig = computed(() => {
   content: "#";
   position: absolute;
   left: -1.5rem;
-  color: #cbd5e1;
+  color: #a3a3a3;
   font-weight: 400;
   opacity: 0;
   transition: opacity 0.2s;
@@ -200,7 +200,7 @@ const difficultyConfig = computed(() => {
   top: 0.6em;
   width: 6px;
   height: 6px;
-  background: linear-gradient(135deg, #3b82f6, #06b6d4);
+  background: linear-gradient(135deg, #404040, #737373);
   border-radius: 50%;
 }
 
@@ -224,7 +224,7 @@ const difficultyConfig = computed(() => {
   top: 0.1em;
   width: 1.75rem;
   height: 1.75rem;
-  background: linear-gradient(135deg, #3b82f6, #06b6d4);
+  background: linear-gradient(135deg, #404040, #737373);
   color: white;
   border-radius: 0.5rem;
   display: flex;
@@ -246,7 +246,7 @@ const difficultyConfig = computed(() => {
 }
 
 :deep(thead) {
-  background: linear-gradient(to right, #1e293b, #334155);
+  background: linear-gradient(to right, #171717, #404040);
   color: white;
 }
 
@@ -261,24 +261,24 @@ const difficultyConfig = computed(() => {
 
 :deep(td) {
   padding: 1rem 1.25rem;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid #e5e5e5;
 }
 
 :global(.dark) :deep(td) {
-  border-top-color: #334155;
+  border-top-color: #404040;
 }
 
 :global(.dark) :deep(code) {
-  background: rgba(148, 163, 184, 0.2);
-  color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.08);
+  color: #f5f5f5;
 }
 
 :global(.dark) :deep(blockquote) {
-  background: linear-gradient(to right, rgba(59, 130, 246, 0.14), transparent);
+  background: linear-gradient(to right, rgba(64, 64, 64, 0.14), transparent);
 }
 
 :deep(tbody tr:hover) {
-  background: rgba(59, 130, 246, 0.05);
+  background: rgba(64, 64, 64, 0.05);
 }
 
 /* 打印样式 */
