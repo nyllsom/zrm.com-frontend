@@ -5,7 +5,7 @@
     <div class="container mx-auto px-12 grid grid-cols-1 lg:grid-cols-2 gap-16 py-24">
       <div class="flex flex-col justify-center">
         <h1 class="text-5xl md:text-6xl font-semibold leading-tight tracking-tight text-gray-900 dark:text-gray-50">
-          你好，我是<br class="hidden md:block" />曾睿鸣
+          你好，我是<br class="hidden md:block" />nyllsom
         </h1>
 
         <p class="mt-6 text-lg text-gray-500 dark:text-gray-400 leading-relaxed max-w-md">
