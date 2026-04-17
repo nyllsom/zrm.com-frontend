@@ -5,7 +5,7 @@
 
       <div class="mb-8 text-center">
         <div class="flex justify-center mb-4">
-          <img src="/logo.png" alt="AIA Logo" class="w-10 h-10 object-contain" />
+          <img src="/logo.jpg" alt="Logo" class="w-10 h-10 object-contain" />
         </div>
         <h1 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-gray-50">管理员登录</h1>
         <p class="mt-1 text-sm text-gray-400 dark:text-gray-500">NJU AIA 后台管理系统</p>

@@ -5,7 +5,7 @@
       <div class="mx-auto flex h-14 max-w-7xl items-center justify-between px-6">
         <div class="flex items-center gap-8">
           <router-link to="/admin/articles" class="group flex items-center gap-2 outline-none">
-            <img src="/logo.png" alt="AIA Logo" class="h-6 w-6 object-contain" />
+            <img src="/logo.jpg" alt="Logo" class="h-6 w-6 object-contain" />
             <span class="text-sm font-semibold text-gray-900 transition-colors group-hover:text-[#40B3FF] dark:text-gray-50">
               AIA 管理后台
             </span>

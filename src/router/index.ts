@@ -16,12 +16,8 @@ const router = createRouter({
           component: () => import('@/views/Home.vue'),
         },
         {
-          path: 'activity-posts',
-          component: () => import('@/views/ActivityPosts.vue'),
-        },
-        {
-          path: 'tech-tutorials',
-          component: () => import('@/views/TechTutorials.vue'),
+          path: 'blog',
+          component: () => import('@/views/Blog.vue'),
         },
         {
           path: 'reader',
@@ -30,22 +26,6 @@ const router = createRouter({
         {
           path: 'about',
           component: () => import('@/views/About.vue'),
-        },
-        {
-          path: 'honor-wall',
-          component: () => import('@/views/HonorWall.vue'),
-        },
-        {
-          path: 'member-wall',
-          component: () => import('@/views/MemberWall.vue'),
-        },
-        {
-          path: 'gallery/:entry(.*)*',
-          component: () => import('@/views/Gallery.vue'),
-        },
-        {
-          path: 'livecodes',
-          component: () => import('@/views/Livecodes.vue'),
         },
       ],
     },

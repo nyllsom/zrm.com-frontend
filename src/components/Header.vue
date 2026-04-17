@@ -4,39 +4,19 @@
     class="fixed top-0 z-50 w-full border-b border-gray-100 bg-white/90 backdrop-blur-sm transition-all duration-300 dark:border-gray-800 dark:bg-gray-950/90"
   >
     <nav class="container relative mx-auto flex h-14 items-center justify-between px-6">
-      <a href="/" class="group flex items-center gap-2.5 outline-none">
-        <img src="/logo.png" alt="AIA Logo" class="h-7 w-7 object-contain" />
-        <span class="text-sm font-semibold tracking-tight text-gray-900 dark:text-gray-50">NJU AIA</span>
-        <span
-          class="hidden text-sm text-gray-400 transition-colors group-hover:text-gray-600 dark:text-gray-500 dark:group-hover:text-gray-300 lg:inline-block"
-        >
-          南京大学人工智能协会
-        </span>
-      </a>
+      <router-link to="/" class="group flex items-center gap-2.5 outline-none">
+        <img src="/logo.jpg" alt="Logo" class="h-7 w-7 object-contain" />
+        <span class="text-sm font-semibold tracking-tight text-gray-900 dark:text-gray-50">孜然庙里泥油僧</span>
+      </router-link>
 
       <ul class="hidden items-center gap-7 text-sm font-medium text-gray-600 dark:text-gray-400 md:flex">
         <li v-for="link in navLinks" :key="link.name">
-          <a
-            :href="link.href"
-            :target="link.isExternal ? '_blank' : '_self'"
-            class="flex items-center gap-1 transition-colors duration-200 hover:text-gray-900 dark:hover:text-gray-100"
+          <router-link
+            :to="link.href"
+            class="transition-colors duration-200 hover:text-gray-900 dark:hover:text-gray-100"
           >
             {{ link.name }}
-            <svg
-              v-if="link.isExternal"
-              class="h-3 w-3 opacity-50"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-              />
-            </svg>
-          </a>
+          </router-link>
         </li>
       </ul>
 
@@ -95,14 +75,13 @@
       >
         <ul class="flex flex-col gap-4 px-6 py-4 text-sm font-medium text-gray-700 dark:text-gray-300">
           <li v-for="link in navLinks" :key="link.name">
-            <a
-              :href="link.href"
-              :target="link.isExternal ? '_blank' : '_self'"
+            <router-link
+              :to="link.href"
               class="block transition-colors hover:text-gray-900 dark:hover:text-gray-100"
               @click="mobileMenuOpen = false"
             >
               {{ link.name }}
-            </a>
+            </router-link>
           </li>
         </ul>
       </div>
@@ -119,14 +98,7 @@ const mobileMenuOpen = ref(false)
 
 const navLinks = [
   { name: '首页', href: '/' },
-  { name: '活动推文', href: '/activity-posts' },
-  { name: '技术教程', href: '/tech-tutorials' },
-  // { name: 'LiveCode', href: '/livecodes' },
-
-  { name: '关于我们', href: '/about' },
-  { name: '荣誉墙', href: '/honor-wall' },
-  { name: '成员墙', href: '/member-wall' },
-    { name: '画廊', href: '/gallery' },
-  { name: '技术论坛', href: 'https://forum.nju-aia.com/', isExternal: true },
+  { name: '博客', href: '/blog' },
+  { name: '关于我', href: '/about' },
 ]
 </script>
