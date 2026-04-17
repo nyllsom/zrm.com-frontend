@@ -17,7 +17,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://nju-aia.com',
+        target: 'https://zengruiming.com',
         changeOrigin: true,
       },
     },
