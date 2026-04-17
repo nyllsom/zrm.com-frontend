@@ -168,8 +168,8 @@
                 <label class="block text-[11px] font-medium text-gray-400 dark:text-gray-500 mb-1">分类</label>
                 <select v-model="form.category"
                   class="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-gray-800 dark:text-gray-200 outline-none focus:border-[#40B3FF] transition-colors">
-                  <option value="activity">activity</option>
-                  <option value="tutorial">tutorial</option>
+                  <option value="blog">blog</option>
+                  <option value="note">note</option>
                 </select>
               </div>
               <div>
@@ -428,7 +428,7 @@ import LineView from '@/components/LineView.vue';
 import MinimalView from '@/components/MinimalView.vue';
 import TechnicalView from '@/components/TechnicalView.vue';
 
-type ArticleCategory = 'activity' | 'tutorial';
+type ArticleCategory = 'blog' | 'note';
 
 interface ArticleListItem {
   id: string;
@@ -483,7 +483,7 @@ const form = ref<AdminFormState>({
   id: '',
   title: '',
   author: '',
-  category: 'activity',
+  category: 'blog',
   date: new Date().toISOString().slice(0, 10),
   published: false,
   content: '',
@@ -661,7 +661,7 @@ function applyArticleToForm(article: Article) {
     id: article.id,
     title: article.title || '',
     author: article.author || '',
-    category: (article.category as ArticleCategory) || 'activity',
+    category: (article.category as ArticleCategory) || 'blog',
     date: formatDate(article.date || article.createdAt || article.updatedAt) || getTodayDateString(),
     published: Boolean(article.published),
     content: article.content || '',
@@ -680,7 +680,7 @@ function resetForm() {
       id: '',
       title: '',
       author: '',
-      category: 'activity',
+      category: 'blog',
       date: getTodayDateString(),
       published: false,
       content: '',
@@ -710,7 +710,7 @@ function createNewArticle() {
     id: '',
     title: '',
     author: '',
-    category: 'activity',
+    category: 'blog',
     date: getTodayDateString(),
     published: false,
     content: '',
@@ -739,8 +739,8 @@ const filteredArticles = computed(() => {
 });
 
 const groupedArticles = computed(() => ({
-  活动推文: filteredArticles.value.filter((item) => item.category === 'activity'),
-  技术教程: filteredArticles.value.filter((item) => item.category === 'tutorial'),
+  博客文章: filteredArticles.value.filter((item) => item.category === 'blog'),
+  随笔: filteredArticles.value.filter((item) => item.category === 'note'),
 }));
 
 const parsedSlides = computed<SlideNode[]>(() => {
@@ -895,7 +895,7 @@ async function deleteCurrentArticle() {
       id: '',
       title: '',
       author: '',
-      category: 'activity',
+      category: 'blog',
       date: getTodayDateString(),
       published: false,
       content: '',
