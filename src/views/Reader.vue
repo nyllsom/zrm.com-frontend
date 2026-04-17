@@ -13,7 +13,7 @@
           <!-- <a href="/" class="flex items-center gap-2 outline-none group"> -->
             <!-- <img src="/logo.png" alt="AIA Logo" class="w-5 h-5 object-contain" /> -->
             <span class="text-sm font-semibold text-gray-900 dark:text-gray-50 group-hover:text-[#40B3FF] transition-colors">
-              AIA Docs
+              ZRM Docs
             </span>
           <!-- </a> -->
 
@@ -138,7 +138,7 @@
         <!-- Sidebar Footer -->
         <div class="h-10 px-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between shrink-0">
           <span class="text-[10px] text-gray-300 dark:text-gray-700 font-mono">{{ docList.length }} 篇文章</span>
-          <span class="text-[10px] text-gray-300 dark:text-gray-700">NJU AIA</span>
+          <span class="text-[10px] text-gray-300 dark:text-gray-700">孜然庙里泥油僧</span>
         </div>
       </div>
     </transition>
