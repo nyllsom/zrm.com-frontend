@@ -53,6 +53,23 @@
           </div>
         </div>
 
+        <!-- 为什么做这个主页 -->
+        <div v-if="aboutData.motivation" class="p-8 border border-gray-100 dark:border-gray-800 rounded-xl bg-white dark:bg-gray-900 mb-5">
+          <h2 class="text-base font-semibold text-gray-900 dark:text-gray-50 mb-4 flex items-center gap-2">
+            <span class="w-1 h-4 bg-[#40B3FF] rounded-full"></span>
+            {{ aboutData.motivation.heading }}
+          </h2>
+          <div class="space-y-3">
+            <p
+              v-for="(reason, index) in aboutData.motivation.reasons"
+              :key="index"
+              class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed"
+            >
+              {{ reason }}
+            </p>
+          </div>
+        </div>
+
         <!-- 联系方式 -->
         <div class="p-8 border border-gray-100 dark:border-gray-800 rounded-xl bg-white dark:bg-gray-900 mb-10">
           <h2 class="text-base font-semibold text-gray-900 dark:text-gray-50 mb-6 flex items-center gap-2">
@@ -110,9 +127,15 @@ interface AboutContact {
   link: string
 }
 
+interface AboutMotivation {
+  heading: string
+  reasons: string[]
+}
+
 interface AboutData {
   title: string
   intro: string
+  motivation: AboutMotivation | null
   interests: string[]
   contacts: AboutContact[]
   footer: string
@@ -121,6 +144,7 @@ interface AboutData {
 const getDefaultAboutData = (): AboutData => ({
   title: '',
   intro: '',
+  motivation: null,
   interests: [],
   contacts: [],
   footer: '',
@@ -152,6 +176,9 @@ const fetchAbout = async () => {
     aboutData.value = {
       title: data.title ?? '',
       intro: data.intro ?? '',
+      motivation: data.motivation && typeof data.motivation === 'object'
+        ? { heading: data.motivation.heading ?? '', reasons: Array.isArray(data.motivation.reasons) ? data.motivation.reasons : [] }
+        : null,
       interests: Array.isArray(data.interests) ? data.interests : [],
       contacts: Array.isArray(data.contacts) ? data.contacts : [],
       footer: data.footer ?? '',
