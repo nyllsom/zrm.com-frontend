@@ -112,9 +112,24 @@ const posts = ref<Article[]>([])
 const isLoading = ref(false)
 const randomGif = ref('')
 
+const CONFIG = {
+  capoo: 16,
+  sumikkogurashi: 3
+}
+
+const getRandomGifCapoo = () => {
+  const n = Math.floor(Math.random() * CONFIG['capoo']) + 1
+  return `${ASSET_BASE_URL}/capoo/${n}.webp`
+}
+
+const getRandomGifSumikko = () => {
+  const n = Math.floor(Math.random() * CONFIG['sumikkogurashi']) + 1
+  return `${ASSET_BASE_URL}/sumikkogurashi/${n}.gif`
+}
+
 const getRandomGif = () => {
-  const n = Math.floor(Math.random() * 33) + 1
-  return `${ASSET_BASE_URL}/capoo/${n}.gif`
+  const isCapoo = Math.random() < 0.8
+  return isCapoo ? getRandomGifCapoo() : getRandomGifSumikko()
 }
 
 const recentPosts = computed(() => posts.value.slice(0, 3))
