@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import SiteLayout from '@/layouts/SiteLayout.vue'
 import AdminLayout from '@/layouts/AdminLayout.vue'
-import { getToken } from '@/api/auth'
+import { isTokenValid, removeToken } from '@/api/auth'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -70,15 +70,16 @@ const router = createRouter({
 })
 
 router.beforeEach((to, _from, next) => {
-  const token = getToken()
+  const valid = isTokenValid()
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
 
-  if (requiresAuth && !token) {
+  if (requiresAuth && !valid) {
+    removeToken()
     next('/admin/login')
     return
   }
 
-  if (to.path === '/admin/login' && token) {
+  if (to.path === '/admin/login' && valid) {
     next('/admin/articles')
     return
   }

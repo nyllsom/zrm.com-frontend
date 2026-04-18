@@ -56,3 +56,20 @@ export function setToken(token: string) {
 export function removeToken() {
   localStorage.removeItem(TOKEN_KEY);
 }
+
+/**
+ * 解析 JWT payload 中的 exp 字段，判断 token 是否仍在有效期内。
+ * token 不存在、格式异常、已过期均返回 false。
+ */
+export function isTokenValid(): boolean {
+  const token = getToken();
+  if (!token) return false;
+
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    if (!payload.exp) return false;
+    return payload.exp * 1000 > Date.now();
+  } catch {
+    return false;
+  }
+}

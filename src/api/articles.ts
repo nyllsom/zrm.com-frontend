@@ -1,5 +1,5 @@
 ﻿import axios from 'axios';
-import { getToken } from '@/api/auth';
+import { getToken, removeToken } from '@/api/auth';
 
 export type ArticleCategory = 'blog' | 'note';
 export type ArticleMode =
@@ -78,7 +78,13 @@ const handleResponseError = (error: any) => {
 };
 
 publicHttp.interceptors.response.use((response) => response, handleResponseError);
-authedHttp.interceptors.response.use((response) => response, handleResponseError);
+authedHttp.interceptors.response.use((response) => response, (error: any) => {
+  if (error?.response?.status === 401) {
+    removeToken();
+    window.location.href = '/admin/login';
+  }
+  return handleResponseError(error);
+});
 
 export const articlesApi = {
   getArticles(options?: ArticleQueryOptions) {
