@@ -23,7 +23,7 @@ const contentSlides = computed(() => props.slides.filter((s) => s.type === 'cont
 <template>
   <div class="line-root min-h-screen bg-stone-50 dark:bg-stone-950 py-16 px-4">
     
-    <article class="line-paper max-w-4xl mx-auto bg-white dark:bg-stone-900 relative">
+    <article class="line-paper w-full lg:w-[60vw] max-w-[72rem] mx-auto bg-white dark:bg-stone-900 relative">
       
       <!-- 四角装饰线 -->
       <div class="corner-lines">
@@ -47,16 +47,14 @@ const contentSlides = computed(() => props.slides.filter((s) => s.type === 'cont
             <div class="h-0.5 bg-stone-900 dark:bg-stone-100 w-32"></div>
           </div>
 
-          <div class="flex items-start gap-8 mb-8">
-            <div class="flex-shrink-0 w-1 bg-stone-900 dark:bg-stone-100 h-24"></div>
-            <div class="flex-1">
-              <h1 class="text-4xl sm:text-5xl font-light tracking-tight text-stone-950 dark:text-stone-50 leading-tight border-b-4 border-stone-900 dark:border-stone-100 pb-4 inline-block">
-                {{ slides[0].title }}
-              </h1>
-            </div>
+          <div class="mb-8 text-center">
+            <div class="w-12 h-1 bg-stone-900 dark:bg-stone-100 mx-auto mb-6"></div>
+            <h1 class="text-4xl sm:text-5xl font-light tracking-tight text-stone-950 dark:text-stone-50 leading-tight border-b-4 border-stone-900 dark:border-stone-100 pb-4 inline-block mx-auto text-center">
+              {{ slides[0].title }}
+            </h1>
           </div>
 
-          <div class="flex items-center gap-6 ml-9 text-sm text-stone-600 dark:text-stone-400 mb-12">
+          <div class="flex items-center justify-center gap-6 text-sm text-stone-600 dark:text-stone-400 mb-12">
             <div class="flex items-center gap-2">
               <div class="w-6 h-px bg-stone-400"></div>
               <span class="uppercase tracking-widest">{{ author || '作者' }}</span>
@@ -68,7 +66,7 @@ const contentSlides = computed(() => props.slides.filter((s) => s.type === 'cont
             </div>
           </div>
 
-          <div v-if="slides[0].elements.length > 0" class="ml-9 pl-6 border-l-2 border-stone-200 dark:border-stone-800">
+          <div v-if="slides[0].elements.length > 0" class="max-w-4xl mx-auto pl-6 border-l-2 border-stone-200 dark:border-stone-800">
             <div class="prose-line">
               <AstRenderer v-for="(el, idx) in slides[0].elements" :key="idx" :node="el" />
             </div>
@@ -517,7 +515,6 @@ const contentSlides = computed(() => props.slides.filter((s) => s.type === 'cont
 
 :deep(.shiki) {
   margin: 1.5rem 0 !important;
-  padding: 1.5rem !important;
   border: 2px solid var(--line-shiki-border) !important;
   border-radius: 0 !important;
   background: var(--line-shiki-bg) !important;

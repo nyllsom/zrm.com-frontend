@@ -24,6 +24,15 @@ const escapeHtml = (value: string) =>
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 
+const normalizeHighlightedHtml = (html: string) => {
+  return html
+    .replace(/(background(?:-color)?\s*:[^;"']+;?)/gi, '')
+    .replace(/(border(?:-[a-z-]+)?\s*:[^;"']+;?)/gi, '')
+    .replace(/(box-shadow\s*:[^;"']+;?)/gi, '')
+    .replace(/(outline\s*:[^;"']+;?)/gi, '')
+    .replace(/style="\s*"/gi, '');
+};
+
 // 伪代码关键字高亮与缩进格式化
 const formatPseudoLine = (line: string) => {
   const indentMatched = line.match(/^(\s+)/);
@@ -59,10 +68,11 @@ const renderBlock = async () => {
     }
 
     try {
-      highlightedCode.value = await codeToHtml(props.node.value, {
+      const shikiHtml = await codeToHtml(props.node.value, {
         lang,
-        theme: isDark.value ? 'tokyo-night' : 'github-light'
+        theme: isDark.value ? 'min-dark' : 'min-light'
       });
+      highlightedCode.value = normalizeHighlightedHtml(shikiHtml);
     } catch (error) {
       highlightedCode.value = `<pre class="shiki-fallback text-sm font-mono p-3 bg-slate-100 dark:bg-slate-800 rounded-lg text-slate-800 dark:text-slate-200">${props.node.value}</pre>`;
     }
@@ -319,7 +329,7 @@ table tr:first-child {
   background: var(--ast-inline-code-bg, rgba(15, 23, 42, 0.06));
   color: var(--ast-inline-code-color, inherit);
   font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
-  font-size: 0.92em;
+  font-size: 1.02em;
 }
 
 :global(.dark) .ast-inline-code {
@@ -479,10 +489,10 @@ table tr:first-child {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.7rem 1rem;
+  padding: 0.45rem 0.85rem;
   border-bottom: 1px solid var(--ast-code-meta-border, #e4e4e7);
   background: var(--ast-code-meta-bg, rgba(15, 23, 42, 0.035));
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   color: var(--ast-code-meta-color, inherit);
 }
 
@@ -510,6 +520,8 @@ table tr:first-child {
   padding: 1rem 1rem 1rem 2.8rem;
   font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
   color: var(--ast-pseudo-color, inherit);
+  font-size: 1.02rem;
+  line-height: 1.65;
 }
 
 :global(.dark) .ast-pseudo-lines {
@@ -527,32 +539,75 @@ table tr:first-child {
 
 .ast-code-content {
   padding: 0;
+  --ast-code-pad-y: 0rem;
+  --ast-code-pad-x: 1rem;
 }
 
 .ast-code-content :deep(pre),
 .ast-code-fallback {
   margin: 0;
-  padding: 1rem 1.1rem;
+  padding: var(--ast-code-pad-y) var(--ast-code-pad-x);
   overflow-x: auto;
+  overflow-y: hidden;
   font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
-  font-size: 0.92rem;
-  line-height: 1.7;
+  font-size: 1.18rem;
+  line-height: 0.7;
+  tab-size: 4;
 }
 
-.ast-code-content :deep(pre) {
-  background: transparent !important;
-}
-
-.ast-code-content :deep(pre code),
-.ast-code-content :deep(pre code .line),
-.ast-code-content :deep(pre code span) {
+.ast-code-content :deep(.shiki),
+.ast-code-content :deep(pre.shiki) {
+  padding: var(--ast-code-pad-y) var(--ast-code-pad-x) !important;
   background: transparent !important;
   border: none !important;
   outline: none !important;
   box-shadow: none !important;
 }
 
+.ast-code-content :deep(pre.shiki code),
+.ast-code-content :deep(pre.shiki code .line),
+.ast-code-content :deep(pre.shiki code span) {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.ast-code-content :deep(pre.shiki code) {
+  line-height: inherit;
+}
+
+.ast-code-content :deep(pre.shiki code .line) {
+  display: block;
+  line-height: inherit;
+}
+
 .ast-mermaid {
   overflow-x: auto;
+}
+
+@media (min-width: 1024px) {
+  .ast-code-content {
+    --ast-code-pad-y: 0rem;
+    --ast-code-pad-x: 1rem;
+  }
+
+  .ast-code-meta,
+  .ast-pseudo-header {
+    padding: 0.5rem 1rem;
+    font-size: 0.76rem;
+  }
+
+  .ast-pseudo-lines {
+    padding: 1.2rem 1.2rem 1.2rem 3rem;
+    font-size: 1.1rem;
+    line-height: 1.62;
+  }
+
+  .ast-code-content :deep(pre),
+  .ast-code-fallback {
+    font-size: 1.18rem;
+    line-height: 0.7;
+  }
 }
 </style>

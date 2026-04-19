@@ -47,7 +47,7 @@ const getColorScheme = (index: number) => {
       <div class="absolute bottom-32 right-[25%] w-44 h-44 bg-sky-300 dark:bg-sky-600/30 rounded-full blur-2xl"></div>
     </div>
 
-    <article class="color-paper relative max-w-4xl mx-auto">
+    <article class="color-paper relative w-full lg:w-[60vw] max-w-[72rem] mx-auto">
       
       <!-- 封面 -->
       <header v-if="slides.length > 0 && slides[0].type === 'cover'" class="cover-colorful relative mb-16">
@@ -73,11 +73,11 @@ const getColorScheme = (index: number) => {
               <span class="text-sm text-slate-500 dark:text-slate-400 tracking-wide">{{ displayDate }}</span>
             </div>
 
-            <h1 class="text-4xl sm:text-5xl font-bold text-slate-900 dark:text-slate-100 mb-8 leading-tight">
+            <h1 class="text-4xl sm:text-5xl font-bold text-slate-900 dark:text-slate-100 mb-8 leading-tight text-center">
               {{ slides[0].title }}
             </h1>
 
-            <div v-if="author" class="flex items-center gap-3 mb-10">
+            <div v-if="author" class="flex items-center justify-center gap-3 mb-10">
               <div class="w-12 h-12 rounded-full bg-gradient-to-br from-rose-400 via-amber-400 to-emerald-400 flex items-center justify-center text-white font-bold text-lg shadow-lg">
                 {{ author[0] }}
               </div>
@@ -434,7 +434,6 @@ const getColorScheme = (index: number) => {
 
 :deep(.shiki) {
   margin: 1.5rem 0 !important;
-  padding: 1.5rem !important;
   border-radius: 1rem !important;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
   border: none !important;

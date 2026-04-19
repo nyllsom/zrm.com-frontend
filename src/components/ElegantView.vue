@@ -23,7 +23,7 @@ const contentSlides = computed(() => props.slides.filter((s) => s.type === 'cont
 <template>
   <div class="soft-root min-h-screen bg-gradient-to-br from-stone-50 via-amber-50/30 to-rose-50/20 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 py-16 px-4">
     
-    <article class="soft-paper max-w-3xl mx-auto bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-3xl shadow-xl shadow-stone-200/50 dark:shadow-black/50 overflow-hidden">
+    <article class="soft-paper w-full lg:w-[60vw] max-w-[72rem] mx-auto bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-3xl shadow-xl shadow-stone-200/50 dark:shadow-black/50 overflow-hidden">
       
       <div class="paper-inner p-10 sm:p-16">
         
@@ -285,7 +285,6 @@ const contentSlides = computed(() => props.slides.filter((s) => s.type === 'cont
 /* 代码块 */
 :deep(.shiki) {
   margin: 1.75rem 0 !important;
-  padding: 1.5rem !important;
   border-radius: 1rem !important;
   border: 1px solid #e7e5e4 !important;
   background: #fafaf9 !important;

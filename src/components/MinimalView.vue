@@ -23,19 +23,19 @@ const contentSlides = computed(() => props.slides.filter((s) => s.type === 'cont
 <template>
   <div class="minimal-root min-h-screen bg-white dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100">
     
-    <article class="minimal-article max-w-3xl mx-auto px-6 py-20 sm:px-8 lg:px-12">
+    <article class="minimal-article w-full lg:w-[60vw] max-w-[72rem] mx-auto px-6 py-20 sm:px-8 lg:px-12">
       
       <!-- 封面 -->
       <header v-if="slides.length > 0 && slides[0].type === 'cover'" class="cover-minimal mb-24">
-        <div class="mb-3 text-xs tracking-widest uppercase text-neutral-400">
+        <div class="mb-3 text-xs tracking-widest uppercase text-neutral-400 text-center">
           {{ displayDate }}
         </div>
         
-        <h1 class="text-5xl sm:text-6xl font-light tracking-tight text-neutral-950 dark:text-neutral-50 mb-4 leading-tight">
+        <h1 class="text-5xl sm:text-6xl font-light tracking-tight text-neutral-950 dark:text-neutral-50 mb-4 leading-tight text-center">
           {{ slides[0].title }}
         </h1>
         
-        <div v-if="subtitle" class="text-xl text-neutral-500 dark:text-neutral-400 font-light mb-12">
+        <div v-if="subtitle" class="text-xl text-neutral-500 dark:text-neutral-400 font-light mb-12 text-center">
           {{ subtitle }}
         </div>
 
@@ -221,12 +221,9 @@ const contentSlides = computed(() => props.slides.filter((s) => s.type === 'cont
 /* 代码块 - 克制的样式 */
 :deep(.shiki) {
   margin: 2rem 0 !important;
-  padding: 1.5rem !important;
   border-radius: 2px !important;
   border: 1px solid #e5e5e5 !important;
   background: #fafafa !important;
-  font-size: 0.9rem !important;
-  line-height: 1.7 !important;
   box-shadow: none !important;
 }
 

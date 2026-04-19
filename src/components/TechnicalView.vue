@@ -31,7 +31,7 @@ const difficultyConfig = computed(() => {
 <template>
   <div class="tech-doc-container min-h-screen bg-white dark:bg-neutral-950">
     <main class="overflow-y-auto">
-      <div class="max-w-4xl mx-auto px-6 py-12 lg:px-12">
+      <div class="w-full lg:w-[60vw] max-w-[72rem] mx-auto px-6 py-12 lg:px-12">
         
         <!-- 文档头部 -->
         <header v-if="slides.length > 0 && slides[0].type === 'cover'" class="mb-16">
@@ -50,11 +50,11 @@ const difficultyConfig = computed(() => {
             </span>
           </div>
 
-          <h1 class="text-4xl lg:text-5xl font-bold text-neutral-950 dark:text-neutral-50 mb-6 leading-tight tracking-tight">
+          <h1 class="text-4xl lg:text-5xl font-bold text-neutral-950 dark:text-neutral-50 mb-6 leading-tight tracking-tight text-center">
             {{ slides[0].title }}
           </h1>
 
-          <div v-if="author" class="flex items-center gap-3 text-neutral-600 dark:text-neutral-400 mb-8">
+          <div v-if="author" class="flex items-center justify-center gap-3 text-neutral-600 dark:text-neutral-400 mb-8">
             <div class="w-10 h-10 rounded-full bg-neutral-900 dark:bg-neutral-100 flex items-center justify-center text-white dark:text-neutral-900 font-bold">
               {{ author[0] }}
             </div>
@@ -134,11 +134,8 @@ const difficultyConfig = computed(() => {
 /* 代码块增强 */
 :deep(.shiki) {
   border-radius: 0.75rem !important;
-  padding: 1.5rem !important;
   border: 1px solid rgba(0, 0, 0, 0.08) !important;
   box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.06) !important;
-  font-size: 0.9em !important;
-  line-height: 1.7 !important;
   margin: 1.5rem 0 !important;
 }
 

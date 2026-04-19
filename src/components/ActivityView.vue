@@ -29,7 +29,7 @@ const contentSlides = computed(() => props.slides.filter((s) => s.type === 'cont
       <div class="absolute bottom-20 left-20 w-96 h-96 bg-neutral-300/40 dark:bg-neutral-700/20 rounded-full blur-3xl"></div>
     </div>
 
-    <article class="elegant-paper relative max-w-5xl mx-auto bg-white dark:bg-neutral-900 backdrop-blur-sm shadow-2xl rounded-2xl overflow-hidden">
+    <article class="elegant-paper relative w-full lg:w-[60vw] max-w-[72rem] mx-auto bg-white dark:bg-neutral-900 backdrop-blur-sm shadow-2xl rounded-2xl overflow-hidden">
       
       <!-- 封面区域 -->
       <header v-if="slides.length > 0 && slides[0].type === 'cover'" class="cover-section relative bg-neutral-950 text-white p-16 md:p-24">
@@ -38,7 +38,7 @@ const contentSlides = computed(() => props.slides.filter((s) => s.type === 'cont
         <div class="absolute top-0 right-0 w-32 h-32 border-t-4 border-r-4 border-white/15 rounded-tr-2xl"></div>
         <div class="absolute bottom-0 left-0 w-32 h-32 border-b-4 border-l-4 border-white/15 rounded-bl-2xl"></div>
         
-        <div class="relative z-10">
+        <div class="relative z-10 text-center">
           <div class="inline-block px-4 py-1 mb-6 text-sm font-medium tracking-widest uppercase bg-white/10 backdrop-blur rounded-full border border-white/15">
             {{ courseName || 'Feature Article' }}
           </div>
@@ -47,7 +47,7 @@ const contentSlides = computed(() => props.slides.filter((s) => s.type === 'cont
             {{ slides[0].title }}
           </h1>
           
-          <div class="flex flex-wrap items-center gap-6 text-lg text-neutral-300 mb-8">
+          <div class="flex flex-wrap items-center justify-center gap-6 text-lg text-neutral-300 mb-8">
             <div class="flex items-center gap-2">
               <div class="w-8 h-8 rounded-full bg-neutral-700 flex items-center justify-center text-white text-sm font-bold">
                 {{ (studentName || 'S')[0] }}
@@ -226,7 +226,6 @@ const contentSlides = computed(() => props.slides.filter((s) => s.type === 'cont
 
 :deep(.shiki) {
   border-radius: 0.75rem !important;
-  padding: 1.25rem !important;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04) !important;
   border: 1px solid rgba(0, 0, 0, 0.08) !important;
 }
