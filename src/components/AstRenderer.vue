@@ -543,6 +543,15 @@ table tr:first-child {
   background: transparent !important;
 }
 
+.ast-code-content :deep(pre code),
+.ast-code-content :deep(pre code .line),
+.ast-code-content :deep(pre code span) {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
 .ast-mermaid {
   overflow-x: auto;
 }

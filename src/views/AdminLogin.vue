@@ -8,7 +8,7 @@
           <img src="/logo.jpg" alt="Logo" class="w-10 h-10 object-contain" />
         </div>
         <h1 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-gray-50">管理员登录</h1>
-        <p class="mt-1 text-sm text-gray-400 dark:text-gray-500">NJU AIA 后台管理系统</p>
+        <p class="mt-1 text-sm text-gray-400 dark:text-gray-500">nyllsom 后台管理系统</p>
       </div>
 
       <form @submit.prevent="handleLogin" class="space-y-4">

@@ -1,6 +1,6 @@
 <!-- Reader.vue -->
 <template>
-  <div class="mt-14 w-full h-full overflow-hidden bg-white dark:bg-gray-950 flex transition-colors duration-300 relative">
+  <div class="w-full h-[calc(100vh-3.5rem)] overflow-hidden bg-white dark:bg-gray-950 flex transition-colors duration-300 relative">
 
     <!-- ── Sidebar ── -->
     <transition name="slide-sidebar">
