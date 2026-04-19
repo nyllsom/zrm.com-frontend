@@ -24,6 +24,18 @@ const escapeHtml = (value: string) =>
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 
+const normalizeCodeLanguage = (value?: string) => {
+  const normalized = (value || 'text').trim().toLowerCase();
+
+  switch (normalized) {
+    case 'env':
+    case '.env':
+      return 'dotenv';
+    default:
+      return normalized || 'text';
+  }
+};
+
 const normalizeHighlightedHtml = (html: string) => {
   return html
     .replace(/(background(?:-color)?\s*:[^;"']+;?)/gi, '')
@@ -46,7 +58,8 @@ const formatPseudoLine = (line: string) => {
 
 const renderBlock = async () => {
   if (props.node.type === 'code') {
-    const lang = props.node.lang || 'text';
+    const rawLang = props.node.lang || 'text';
+    const lang = normalizeCodeLanguage(rawLang);
 
     if (lang === 'mermaid') {
       try {
@@ -70,7 +83,7 @@ const renderBlock = async () => {
     try {
       const shikiHtml = await codeToHtml(props.node.value, {
         lang,
-        theme: isDark.value ? 'min-dark' : 'min-light'
+        theme: isDark.value ? 'dark-plus' : 'light-plus'
       });
       highlightedCode.value = normalizeHighlightedHtml(shikiHtml);
     } catch (error) {
@@ -488,11 +501,11 @@ table tr:first-child {
 .ast-pseudo-header {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.45rem 0.85rem;
+  gap: 0.6rem;
+  padding: 0.3rem 0.64rem;
   border-bottom: 1px solid var(--ast-code-meta-border, #e4e4e7);
   background: var(--ast-code-meta-bg, rgba(15, 23, 42, 0.035));
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   color: var(--ast-code-meta-color, inherit);
 }
 
@@ -539,26 +552,29 @@ table tr:first-child {
 
 .ast-code-content {
   padding: 0;
-  --ast-code-pad-y: 0rem;
-  --ast-code-pad-left: 1rem;
-  --ast-code-pad-right: 1.25rem;
+  --ast-code-pad-top: 0rem;
+  --ast-code-pad-bottom: 0.08rem;
+  --ast-code-pad-left: 0.82rem;
+  --ast-code-pad-right: 0.96rem;
+  --ast-code-font-size: 1.05rem;
+  --ast-code-line-box: 1.09rem;
 }
 
 .ast-code-content :deep(pre),
 .ast-code-fallback {
   margin: 0;
-  padding: var(--ast-code-pad-y) var(--ast-code-pad-right) var(--ast-code-pad-y) var(--ast-code-pad-left);
+  padding: var(--ast-code-pad-top) var(--ast-code-pad-right) var(--ast-code-pad-bottom) var(--ast-code-pad-left);
   overflow-x: auto;
   overflow-y: hidden;
-  font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
-  font-size: 1rem;
-  line-height: 0.8;
+  font-family: "Cascadia Code", "JetBrains Mono", "Fira Code", "Consolas", monospace;
+  font-size: var(--ast-code-font-size);
+  line-height: var(--ast-code-line-box);
   tab-size: 4;
 }
 
 .ast-code-content :deep(.shiki),
 .ast-code-content :deep(pre.shiki) {
-  padding: var(--ast-code-pad-y) var(--ast-code-pad-right) var(--ast-code-pad-y) var(--ast-code-pad-left) !important;
+  padding: var(--ast-code-pad-top) var(--ast-code-pad-right) var(--ast-code-pad-bottom) var(--ast-code-pad-left) !important;
   background: transparent !important;
   border: none !important;
   outline: none !important;
@@ -577,13 +593,19 @@ table tr:first-child {
 .ast-code-content :deep(pre.shiki code) {
   display: block;
   min-width: max-content;
-  padding-right: 0.25rem;
-  line-height: inherit;
+  padding-right: 0.1rem;
+  line-height: var(--ast-code-line-box);
 }
 
 .ast-code-content :deep(pre.shiki code .line) {
   display: block;
-  line-height: inherit;
+  line-height: var(--ast-code-line-box);
+  min-height: var(--ast-code-line-box);
+}
+
+.ast-code-content :deep(pre.shiki code .line:empty::before) {
+  content: ' ';
+  white-space: pre;
 }
 
 .ast-mermaid {
@@ -592,15 +614,18 @@ table tr:first-child {
 
 @media (min-width: 1024px) {
   .ast-code-content {
-    --ast-code-pad-y: 0rem;
-    --ast-code-pad-left: 1rem;
-    --ast-code-pad-right: 1.4rem;
+    --ast-code-pad-top: 0rem;
+    --ast-code-pad-bottom: 0.12rem;
+    --ast-code-pad-left: 0.88rem;
+    --ast-code-pad-right: 1.02rem;
+    --ast-code-font-size: 1.1rem;
+    --ast-code-line-box: 1.12rem;
   }
 
   .ast-code-meta,
   .ast-pseudo-header {
-    padding: 0.5rem 1rem;
-    font-size: 0.76rem;
+    padding: 0.34rem 0.72rem;
+    font-size: 0.72rem;
   }
 
   .ast-pseudo-lines {
@@ -609,10 +634,5 @@ table tr:first-child {
     line-height: 1.62;
   }
 
-  .ast-code-content :deep(pre),
-  .ast-code-fallback {
-    font-size: 1.18rem;
-    line-height: 0.7;
-  }
 }
 </style>
