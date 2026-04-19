@@ -540,24 +540,25 @@ table tr:first-child {
 .ast-code-content {
   padding: 0;
   --ast-code-pad-y: 0rem;
-  --ast-code-pad-x: 1rem;
+  --ast-code-pad-left: 1rem;
+  --ast-code-pad-right: 1.25rem;
 }
 
 .ast-code-content :deep(pre),
 .ast-code-fallback {
   margin: 0;
-  padding: var(--ast-code-pad-y) var(--ast-code-pad-x);
+  padding: var(--ast-code-pad-y) var(--ast-code-pad-right) var(--ast-code-pad-y) var(--ast-code-pad-left);
   overflow-x: auto;
   overflow-y: hidden;
   font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
-  font-size: 1.18rem;
-  line-height: 0.7;
+  font-size: 1rem;
+  line-height: 0.8;
   tab-size: 4;
 }
 
 .ast-code-content :deep(.shiki),
 .ast-code-content :deep(pre.shiki) {
-  padding: var(--ast-code-pad-y) var(--ast-code-pad-x) !important;
+  padding: var(--ast-code-pad-y) var(--ast-code-pad-right) var(--ast-code-pad-y) var(--ast-code-pad-left) !important;
   background: transparent !important;
   border: none !important;
   outline: none !important;
@@ -574,6 +575,9 @@ table tr:first-child {
 }
 
 .ast-code-content :deep(pre.shiki code) {
+  display: block;
+  min-width: max-content;
+  padding-right: 0.25rem;
   line-height: inherit;
 }
 
@@ -589,7 +593,8 @@ table tr:first-child {
 @media (min-width: 1024px) {
   .ast-code-content {
     --ast-code-pad-y: 0rem;
-    --ast-code-pad-x: 1rem;
+    --ast-code-pad-left: 1rem;
+    --ast-code-pad-right: 1.4rem;
   }
 
   .ast-code-meta,
