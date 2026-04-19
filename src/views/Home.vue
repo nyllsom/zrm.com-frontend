@@ -2,8 +2,8 @@
 
   <!-- Hero Section -->
   <section class="min-h-[70vh] flex items-center pt-14 font-sans">
-    <div class="container mx-auto px-12 grid grid-cols-1 lg:grid-cols-2 gap-16 py-24">
-      <div class="flex flex-col justify-center">
+    <div class="container mx-auto px-6 sm:px-8 lg:px-12 xl:px-20 2xl:px-24 grid grid-cols-1 lg:grid-cols-2 gap-16 py-24">
+      <div class="flex flex-col justify-center lg:pl-6 xl:pl-10 2xl:pl-14">
         <h1 class="text-5xl md:text-6xl font-semibold leading-tight tracking-tight text-gray-900 dark:text-gray-50">
           你好，我是<br class="hidden md:block" />nyllsom
         </h1>
@@ -34,13 +34,13 @@
   </section>
 
   <!-- Divider -->
-  <div class="container mx-auto px-12">
+  <div class="container mx-auto px-6 sm:px-8 lg:px-12 xl:px-20 2xl:px-24">
     <hr class="border-gray-100 dark:border-gray-800" />
   </div>
 
   <!-- Recent Posts Section -->
   <section class="py-24">
-    <div class="container mx-auto px-12">
+    <div class="container mx-auto px-6 sm:px-8 lg:px-12 xl:px-20 2xl:px-24">
       <div class="mb-12">
         <p class="text-xs font-medium text-[#40B3FF] uppercase tracking-widest mb-3">Recent</p>
         <h2 class="text-3xl md:text-4xl font-semibold tracking-tight text-gray-900 dark:text-gray-50">
