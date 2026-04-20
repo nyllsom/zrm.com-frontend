@@ -168,7 +168,7 @@
                 <label class="block text-[11px] font-medium text-gray-400 dark:text-gray-500 mb-1">分类</label>
                 <select v-model="form.category"
                   class="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-gray-800 dark:text-gray-200 outline-none focus:border-[#40B3FF] transition-colors">
-                  <option value="tech">blog</option>
+                  <option value="tech">tech</option>
                   <option value="note">note</option>
                   <option value="prose">prose</option>
                 </select>
