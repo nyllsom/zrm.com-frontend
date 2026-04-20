@@ -93,7 +93,7 @@ export const useReaderStore = defineStore('reader', {
     groupedDocs: (state) => ({
       技术探索: state.docList.filter((d) => d.category === 'tech'),
       学习记录: state.docList.filter((d) => d.category === 'note'),
-      随笔: state.docList.filter((d) => d.category === 'prose'),
+      随笔: state.docList.filter((d) => d.category === 'essay'),
     }),
   },
 
