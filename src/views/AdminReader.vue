@@ -168,8 +168,9 @@
                 <label class="block text-[11px] font-medium text-gray-400 dark:text-gray-500 mb-1">分类</label>
                 <select v-model="form.category"
                   class="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-gray-800 dark:text-gray-200 outline-none focus:border-[#40B3FF] transition-colors">
-                  <option value="blog">blog</option>
+                  <option value="tech">blog</option>
                   <option value="note">note</option>
+                  <option value="prose">prose</option>
                 </select>
               </div>
               <div>
@@ -739,8 +740,9 @@ const filteredArticles = computed(() => {
 });
 
 const groupedArticles = computed(() => ({
-  博客文章: filteredArticles.value.filter((item) => item.category === 'blog'),
-  随笔: filteredArticles.value.filter((item) => item.category === 'note'),
+  技术探索: filteredArticles.value.filter((item) => item.category === 'tech'),
+  学习记录: filteredArticles.value.filter((item) => item.category === 'note'),
+  随笔: filteredArticles.value.filter((item) => item.category === 'prose'),
 }));
 
 const parsedSlides = computed<SlideNode[]>(() => {

@@ -1,7 +1,7 @@
 ﻿import axios from 'axios';
 import { getToken, removeToken } from '@/api/auth';
 
-export type ArticleCategory = 'blog' | 'note';
+export type ArticleCategory = 'tech' | 'note' | 'prose';
 export type ArticleMode =
   | 'slide'
   | 'activity'
