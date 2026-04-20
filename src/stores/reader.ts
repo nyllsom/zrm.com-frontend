@@ -7,6 +7,7 @@ interface ReaderDocMeta {
   title: string;
   category: string;
   date: string;
+  updatedAt?: string;
   defaultMode: ArticleMode;
   author: string;
   cover?: string;
@@ -16,6 +17,7 @@ interface CachedDocumentContent {
   content: string;
   parsedSlides: SlideNode[];
   fetchedAt: number;
+  updatedAt?: string;
 }
 
 const SUPPORTED_VIEW_MODES = [
@@ -55,10 +57,17 @@ function mapArticleToDocMeta(article: Article): ReaderDocMeta {
     title: article.title,
     category: article.category,
     date: formatDate(article.date || article.createdAt || article.updatedAt),
+    updatedAt: article.updatedAt,
     defaultMode: article.defaultMode,
     author: article.author,
     cover: article.cover,
   };
+}
+
+function isCacheFresh(cached: CachedDocumentContent | undefined, updatedAt?: string): boolean {
+  if (!cached) return false;
+  if (!updatedAt) return true;
+  return cached.updatedAt === updatedAt;
 }
 
 function toTimestamp(value?: string): number {
@@ -115,9 +124,17 @@ export const useReaderStore = defineStore('reader', {
         }
 
         const validIds = new Set(this.docList.map((doc) => doc.id));
+        const updatedAtById = new Map(this.docList.map((doc) => [doc.id, doc.updatedAt || '']));
 
         Object.keys(this.documentCache).forEach((id) => {
           if (!validIds.has(id)) {
+            delete this.documentCache[id];
+            return;
+          }
+
+          const cached = this.documentCache[id];
+          const latestUpdatedAt = updatedAtById.get(id) || '';
+          if (latestUpdatedAt && cached?.updatedAt && cached.updatedAt !== latestUpdatedAt) {
             delete this.documentCache[id];
           }
         });
@@ -148,8 +165,9 @@ export const useReaderStore = defineStore('reader', {
       this.currentViewMode = normalizeViewMode(this.documentModes[id]);
       this.error = null;
 
+      const docMeta = this.docList.find((doc) => doc.id === id);
       const cached = this.documentCache[id];
-      if (cached) {
+      if (isCacheFresh(cached, docMeta?.updatedAt)) {
         this.currentMarkdown = cached.content;
         this.currentSlides = cached.parsedSlides;
         return;
@@ -169,6 +187,7 @@ export const useReaderStore = defineStore('reader', {
         const { data } = await articlesApi.getArticleById(id);
         const content = data.content || '';
         const parsedSlides = content ? parseMarkdownToSlides(content) : [];
+        const updatedAt = data.updatedAt || this.docList.find((doc) => doc.id === id)?.updatedAt;
 
         this.documentModes[id] = normalizeViewMode(data.defaultMode);
 
@@ -176,6 +195,7 @@ export const useReaderStore = defineStore('reader', {
           content,
           parsedSlides,
           fetchedAt: Date.now(),
+          updatedAt,
         };
 
         this.currentMarkdown = content;
@@ -203,6 +223,7 @@ export const useReaderStore = defineStore('reader', {
           content: markdown,
           parsedSlides: this.currentSlides,
           fetchedAt: Date.now(),
+          updatedAt: this.documentCache[this.currentDocId]?.updatedAt,
         };
       }
     },

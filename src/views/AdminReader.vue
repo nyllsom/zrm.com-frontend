@@ -1,4 +1,5 @@
-﻿<template>
+﻿type ArticleCategory = 'tech' | 'note' | 'essay';
+<template>
   <div class="w-full h-[calc(100vh-4rem)] overflow-hidden bg-white dark:bg-gray-950 flex transition-colors duration-300 relative">
 
     <!-- Sidebar -->
@@ -429,7 +430,7 @@ import LineView from '@/components/LineView.vue';
 import MinimalView from '@/components/MinimalView.vue';
 import TechnicalView from '@/components/TechnicalView.vue';
 
-type ArticleCategory = 'blog' | 'note';
+type ArticleCategory = 'tech' | 'note' | 'essay';
 
 interface ArticleListItem {
   id: string;
@@ -484,7 +485,7 @@ const form = ref<AdminFormState>({
   id: '',
   title: '',
   author: '',
-  category: 'blog',
+  category: 'tech',
   date: new Date().toISOString().slice(0, 10),
   published: false,
   content: '',
@@ -662,7 +663,7 @@ function applyArticleToForm(article: Article) {
     id: article.id,
     title: article.title || '',
     author: article.author || '',
-    category: (article.category as ArticleCategory) || 'blog',
+    category: (article.category as ArticleCategory) || 'tech',
     date: formatDate(article.date || article.createdAt || article.updatedAt) || getTodayDateString(),
     published: Boolean(article.published),
     content: article.content || '',
@@ -681,7 +682,7 @@ function resetForm() {
       id: '',
       title: '',
       author: '',
-      category: 'blog',
+      category: 'tech',
       date: getTodayDateString(),
       published: false,
       content: '',
@@ -711,7 +712,7 @@ function createNewArticle() {
     id: '',
     title: '',
     author: '',
-    category: 'blog',
+    category: 'tech',
     date: getTodayDateString(),
     published: false,
     content: '',
@@ -897,7 +898,7 @@ async function deleteCurrentArticle() {
       id: '',
       title: '',
       author: '',
-      category: 'blog',
+      category: 'tech',
       date: getTodayDateString(),
       published: false,
       content: '',

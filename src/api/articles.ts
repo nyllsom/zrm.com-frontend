@@ -50,6 +50,18 @@ interface ArticleQueryOptions {
   withAuth?: boolean;
 }
 
+function createNoCacheConfig() {
+  return {
+    params: {
+      _ts: Date.now(),
+    },
+    headers: {
+      'Cache-Control': 'no-cache',
+      Pragma: 'no-cache',
+    },
+  };
+}
+
 const baseConfig = {
   baseURL: '/api',
   timeout: 10000,
@@ -89,12 +101,12 @@ authedHttp.interceptors.response.use((response) => response, (error: any) => {
 export const articlesApi = {
   getArticles(options?: ArticleQueryOptions) {
     const client = options?.withAuth ? authedHttp : publicHttp;
-    return client.get<ArticleListResponse>('/articles');
+    return client.get<ArticleListResponse>('/articles', createNoCacheConfig());
   },
 
   getArticleById(id: string, options?: ArticleQueryOptions) {
     const client = options?.withAuth ? authedHttp : publicHttp;
-    return client.get<Article>(`/articles/${id}`);
+    return client.get<Article>(`/articles/${id}`, createNoCacheConfig());
   },
 
   createArticle(data: CreateArticleRequest) {

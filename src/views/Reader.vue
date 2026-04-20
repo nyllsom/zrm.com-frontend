@@ -493,14 +493,10 @@ const initData = async () => {
   const latestId = typeof route.query.id === 'string' ? route.query.id : '';
 
   if (latestId && readerStore.docList.some((d) => d.id === latestId)) {
-    if (!readerStore.currentDocId || readerStore.currentDocId !== latestId) {
-      await readerStore.loadDocument(latestId);
-    }
+    await readerStore.loadDocument(latestId);
   } else if (readerStore.docList.length > 0) {
     const firstId = readerStore.docList[0].id;
-    if (readerStore.currentDocId !== firstId) {
-      await readerStore.loadDocument(firstId);
-    }
+    await readerStore.loadDocument(firstId);
     router.replace({ path: '/reader', query: { id: firstId } });
   }
 };
